@@ -25,7 +25,7 @@ namespace SooshEgoServer.Controllers
             if (!lobbies.TryAdd(newGuid, new GameLobby()))
             {
                 logger.LogError($"Failed to create a new lobby with ID {newGuid}");
-                throw new Exception("Failed to create a new lobby.");
+                return StatusCode(500, "Failed to create a new lobby.");
             }
 
             logger.LogInformation($"Created new lobby with ID {newGuid}");
