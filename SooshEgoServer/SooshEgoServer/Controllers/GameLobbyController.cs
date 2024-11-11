@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SooshEgoServer.Models;
+using System.Collections.Concurrent;
 
 namespace SooshEgoServer.Controllers
 {
@@ -7,34 +8,55 @@ namespace SooshEgoServer.Controllers
     [Route("[controller]")]
     public class GameLobbyController : ControllerBase
     {
-        private static readonly HashSet<GameLobby> lobbies = [];
+        private static readonly ConcurrentDictionary<Guid, GameLobby> lobbies = [];
+
+        private readonly ILogger<GameLobbyController> logger;
+
+        public GameLobbyController(ILogger<GameLobbyController> logger)
+        {
+            this.logger = logger;
+        }
 
         [HttpPost("create")]
         public IActionResult CreateLobby()
         {
-            GameLobby newLobby = new();
-            lobbies.Add(newLobby);
+            Guid newGuid = Guid.NewGuid();
 
-            return Created("", newLobby.Id);
+            if (!lobbies.TryAdd(newGuid, new GameLobby()))
+            {
+                logger.LogError($"Failed to create a new lobby with ID {newGuid}");
+                throw new Exception("Failed to create a new lobby.");
+            }
+
+            logger.LogInformation($"Created new lobby with ID {newGuid}");
+
+            return Created("", new { LobbyId = newGuid });
         }
 
         [HttpPost("join")]
         public IActionResult JoinLobbyById([FromBody] JoinLobbyRequest request)
         {
-            GameLobby? lobby = lobbies.FirstOrDefault(lobby => lobby.Id == request.LobbyId);
-
-            if (lobby == null)
+            if (!lobbies.TryGetValue(request.LobbyId, out var lobby))
             {
-                return NotFound("Lobby does not exist.");
+                return NotFound("Lobby not found.");
             }
 
-            if (lobby.Players.Count == 5) // >= ?
+            lock (lobby)
             {
-                // todo: i dont think this accounts for if multiple players join at the same time
-                // and the lobby limit exceeds while the websocket connections are being made...
+                if (lobby.Players.Count > 5)
+                {
+                    throw new Exception($"Lobby {request.LobbyId} exceeded the maximum player limit. Current player count: {lobby.Players.Count}");
+                }
 
-                return Conflict("Lobby is full.");
+                if (lobby.Players.Count == 5)
+                {
+                    return Conflict("Lobby is full.");
+                }
+
+                lobby.Players.Add(new Player(request.PlayerName));
             }
+
+            logger.LogInformation($"Player {request.PlayerName} joined lobby {request.LobbyId}. Current player count: {lobby.Players.Count}");
 
             return Ok();
         }
