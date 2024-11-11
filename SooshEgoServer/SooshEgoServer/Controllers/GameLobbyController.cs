@@ -24,8 +24,7 @@ namespace SooshEgoServer.Controllers
 
             if (!lobbies.TryAdd(newGuid, new GameLobby()))
             {
-                logger.LogError($"Failed to create a new lobby with ID {newGuid}");
-                return StatusCode(500, "Failed to create a new lobby.");
+                throw new Exception($"Failed to create a new lobby  with ID {newGuid}.");
             }
 
             logger.LogInformation($"Created new lobby with ID {newGuid}");
@@ -38,7 +37,8 @@ namespace SooshEgoServer.Controllers
         {
             if (!lobbies.TryGetValue(request.LobbyId, out var lobby))
             {
-                return NotFound("Lobby not found.");
+                logger.LogInformation($"Lobby {request.LobbyId} not found.");
+                return NotFound($"Lobby not found.");
             }
 
             lock (lobby)
@@ -50,6 +50,7 @@ namespace SooshEgoServer.Controllers
 
                 if (lobby.Players.Count == 5)
                 {
+                    logger.LogInformation($"Player {request.PlayerName} attempted to joined lobby {request.LobbyId}, but the lobby is full.");
                     return Conflict("Lobby is full.");
                 }
 
