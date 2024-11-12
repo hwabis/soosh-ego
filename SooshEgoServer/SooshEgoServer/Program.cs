@@ -1,4 +1,6 @@
 
+using SooshEgoServer.Hubs;
+
 namespace SooshEgoServer
 {
     public class Program
@@ -14,6 +16,8 @@ namespace SooshEgoServer
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddSignalR();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -26,6 +30,8 @@ namespace SooshEgoServer
             app.UseHttpsRedirection();
 
             app.MapControllers();
+
+            app.MapHub<GameLobbyHub>($"/{nameof(GameLobbyHub)}");
 
             app.Run();
         }

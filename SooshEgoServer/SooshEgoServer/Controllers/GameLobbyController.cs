@@ -4,11 +4,13 @@ using System.Collections.Concurrent;
 
 namespace SooshEgoServer.Controllers
 {
+    // todo remove this whole thing
     [ApiController]
     [Route("[controller]")]
     public class GameLobbyController : ControllerBase
     {
         private static readonly ConcurrentDictionary<Guid, GameLobby> lobbies = [];
+        private static readonly ConcurrentDictionary<Guid, SemaphoreSlim> lobbyLocks = [];
 
         private readonly ILogger<GameLobbyController> logger;
 
@@ -54,7 +56,7 @@ namespace SooshEgoServer.Controllers
                     return Conflict("Lobby is full.");
                 }
 
-                lobby.Players.Add(new Player(request.PlayerName));
+                lobby.Players.Add(new Player(request.PlayerName, "weiofiwoefj"));
             }
 
             logger.LogInformation($"Player {request.PlayerName} joined lobby {request.LobbyId}. Current player count: {lobby.Players.Count}");
