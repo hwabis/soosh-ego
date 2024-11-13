@@ -4,17 +4,18 @@ using System.Collections.Concurrent;
 
 namespace SooshEgoServer.Hubs
 {
-    public class GameLobbyHub : Hub
+    public class GameHub : Hub
     {
-        private static readonly ConcurrentDictionary<Guid, GameLobby> lobbies = [];
+        // Lobby == group of players who aren't in-game yet.
+        // The first player in each list is the lobby leader
+        private static readonly ConcurrentDictionary<Guid, List<Player>> lobbies = [];
         private static readonly ConcurrentDictionary<Guid, SemaphoreSlim> lobbyLocks = [];
 
-        public async Task<Guid> CreateLobby(string playerName)
+        public async Task<Guid> Lobby_CreateLobby(string playerName)
         {
-            var newLobby = new GameLobby();
             var newLobbyId = Guid.NewGuid();
 
-            if (!lobbies.TryAdd(newLobbyId, newLobby))
+            if (!lobbies.TryAdd(newLobbyId, []))
             {
                 throw new Exception("Failed to create a new lobby.");
             }
@@ -24,14 +25,14 @@ namespace SooshEgoServer.Hubs
                 throw new Exception("Failed to create a lobby lock.");
             }
 
-            await addPlayerToLobby(newLobbyId, playerName);
+            await addPlayerToLobbyAsync(newLobbyId, playerName);
 
             return newLobbyId;
         }
 
-        public async Task<bool> JoinLobby(Guid lobbyId, string playerName)
+        public async Task<bool> Lobby_JoinLobby(Guid lobbyId, string playerName)
         {
-            if (!lobbies.TryGetValue(lobbyId, out var lobby))
+            if (!lobbies.TryGetValue(lobbyId, out var lobbyPlayers))
             {
                 return false;
             }
@@ -45,12 +46,12 @@ namespace SooshEgoServer.Hubs
 
             try
             {
-                if (lobby.Players.Count >= 5)
+                if (lobbyPlayers.Count >= 5)
                 {
                     return false;
                 }
 
-                await addPlayerToLobby(lobbyId, playerName);
+                await addPlayerToLobbyAsync(lobbyId, playerName);
 
                 return true;
             }
@@ -60,10 +61,9 @@ namespace SooshEgoServer.Hubs
             }
         }
 
-        private async Task addPlayerToLobby(Guid lobbyId, string playerName)
+        private async Task addPlayerToLobbyAsync(Guid lobbyId, string playerName)
         {
-            GameLobby lobby = lobbies[lobbyId];
-            lobby.Players.Add(new Player(Context.ConnectionId, playerName));
+            lobbies[lobbyId].Add(new Player(Context.ConnectionId, playerName));
             await Groups.AddToGroupAsync(Context.ConnectionId, lobbyId.ToString());
         }
     }

@@ -31,7 +31,7 @@ namespace SooshEgoServer
 
             app.MapControllers();
 
-            app.MapHub<GameLobbyHub>($"/{nameof(GameLobbyHub)}");
+            app.MapHub<GameHub>($"/{nameof(GameHub)}");
 
             app.Run();
         }
