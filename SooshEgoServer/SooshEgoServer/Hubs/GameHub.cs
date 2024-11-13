@@ -7,7 +7,6 @@ namespace SooshEgoServer.Hubs
     public class GameHub : Hub
     {
         // Lobby == group of players who aren't in-game yet.
-        // The first player in each list is the lobby leader
         private static readonly ConcurrentDictionary<Guid, List<Player>> lobbies = [];
         private static readonly ConcurrentDictionary<Guid, SemaphoreSlim> lobbyLocks = [];
 
