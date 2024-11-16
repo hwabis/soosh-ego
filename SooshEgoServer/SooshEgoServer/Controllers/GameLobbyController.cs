@@ -24,12 +24,12 @@ namespace SooshEgoServer.Controllers
 
             if (gameId != null)
             {
-                logger.LogInformation("Created game {GameId}", gameId);
+                logger.LogInformation("Created {GameId}", gameId);
                 return CreatedAtAction("", gameId);
             }
             else
             {
-                logger.LogWarning($"{nameof(CreateGame)}: could not create a game");
+                logger.LogWarning("Could not create a game");
                 return NotFound();
             }
         }
@@ -41,12 +41,12 @@ namespace SooshEgoServer.Controllers
 
             if (joined)
             {
-                logger.LogInformation("{PlayerName} joined game {GameId}", request.PlayerName, request.GameId);
+                logger.LogInformation("{PlayerName} joined {GameId}", request.PlayerName, request.GameId);
                 return Ok();
             }
             else
             {
-                logger.LogInformation("{PlayerName} could not join game {GameId}", request.PlayerName, request.GameId);
+                logger.LogInformation("{PlayerName} could not join {GameId}", request.PlayerName, request.GameId);
                 return NotFound();
             }
         }
