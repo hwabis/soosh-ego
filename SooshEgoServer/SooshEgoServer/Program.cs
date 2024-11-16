@@ -1,4 +1,5 @@
 
+using SooshEgoServer.GameLogic;
 using SooshEgoServer.Hubs;
 
 namespace SooshEgoServer
@@ -18,6 +19,8 @@ namespace SooshEgoServer
 
             builder.Services.AddSignalR();
 
+            builder.Services.AddSingleton<IGamesManager, GamesManager>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -30,7 +33,6 @@ namespace SooshEgoServer
             app.UseHttpsRedirection();
 
             app.MapControllers();
-
             app.MapHub<GameHub>($"/{nameof(GameHub)}");
 
             app.Run();
