@@ -1,9 +1,9 @@
 ﻿namespace SooshEgoServer.GameLogic
 {
-    public class Game
+    public class Game // todo is this serializable?
     {
-        public readonly GameId GameId;
-        public readonly List<Player> Players = [];
+        public GameId GameId { get; init; }
+        public List<Player> Players { get; init; } = [];
 
         public Game(GameId gameId)
         {

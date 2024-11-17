@@ -2,6 +2,8 @@
 {
     public interface IGamesManager
     {
+        public event EventHandler<GameStateUpdatedEventArgs> GameStateUpdated;
+
         public GameId CreateGame();
 
         public (bool success, string errorMessage) AddPlayerToGame(GameId gameId, PlayerName playerName);

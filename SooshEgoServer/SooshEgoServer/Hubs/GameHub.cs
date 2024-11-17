@@ -10,16 +10,12 @@ namespace SooshEgoServer.Hubs
         public GameHub(IGamesManager gamesManager)
         {
             this.gamesManager = gamesManager;
+            this.gamesManager.GameStateUpdated += onGameStateUpdated;
         }
 
-        public async Task JoinGame(GameId gameId, PlayerName playerName)
+        public void JoinGame(GameId gameId, PlayerName playerName)
         {
             gamesManager.MarkPlayerConnected(gameId, playerName, Context.ConnectionId);
-            /*
-            await Groups.AddToGroupAsync(Context.ConnectionId, gameId.Value);
-            
-            IEnumerable<PlayerName>? namesList = gamesManager.GetPlayerNames(gameId);
-            await Clients.Group(gameId.Id).SendAsync("UpdatePlayerList", playerList);todo yo come back*/
         }
 
         public override Task OnDisconnectedAsync(Exception? exception)
@@ -27,6 +23,15 @@ namespace SooshEgoServer.Hubs
             gamesManager.MarkPlayerDisconnected(Context.ConnectionId);
 
             return base.OnDisconnectedAsync(exception);
+        }
+
+        private async void onGameStateUpdated(object? sender, GameStateUpdatedEventArgs e)
+        {
+            IEnumerable<string> connectionIds = e.Game.Players
+                .Where(player => player.ConnectionId != null)
+                .Select(player => player.ConnectionId!);
+
+            await Clients.Clients(connectionIds).SendAsync("GameStateUpdated", e.Game); // todo client, todo test this invocation
         }
     }
 }

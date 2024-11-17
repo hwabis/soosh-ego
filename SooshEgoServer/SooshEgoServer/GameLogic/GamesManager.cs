@@ -11,6 +11,8 @@ namespace SooshEgoServer.GameLogic
         private int gameIdCounter = 0; // todo come up with something cooler
         private const int gamePlayerLimit = 5;
 
+        public event EventHandler<GameStateUpdatedEventArgs>? GameStateUpdated;
+
         public GamesManager(ILogger<GamesManager> logger)
         {
             this.logger = logger;
@@ -111,6 +113,8 @@ namespace SooshEgoServer.GameLogic
                 }
 
                 player.ConnectionId = connectionId;
+
+                GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));
             }
         }
 
@@ -130,6 +134,17 @@ namespace SooshEgoServer.GameLogic
                 }
 
                 matchingPlayer.ConnectionId = null;
+
+                Game? matchingGame = games
+                    .FirstOrDefault(game => game.Players.Any(player => player.ConnectionId == connectionId));
+
+                if (matchingGame == null)
+                {
+                    logger.LogWarning("Disconnect received for connection {ConnectionId} which was not in a game", connectionId);
+                    return;
+                }
+
+                GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));
             }
         }
     }
