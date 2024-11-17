@@ -74,7 +74,7 @@ namespace SooshEgoServer.Tests.GameLogic
 
             gamesManager.AddPlayerToGame(gameId, new("ayaya"));
             Assert.True(gameStateUpdateCount == 1);
-            Assert.True(gamesManager.GetGameState(gameId).game!.Players[0].ConnectionId == null);
+            Assert.Null(gamesManager.GetGameState(gameId).game!.Players[0].ConnectionId);
 
             gamesManager.MarkPlayerConnected(gameId, new("ayaya"), "ayaya-connection");
             Assert.True(gameStateUpdateCount == 2);
@@ -90,6 +90,37 @@ namespace SooshEgoServer.Tests.GameLogic
             gamesManager.MarkPlayerDisconnected("ayaya-connection");
             Assert.True(gameStateUpdateCount == 5);
             Assert.Null(gamesManager.GetGameState(gameId).game!.Players[0].ConnectionId);
+            Assert.True(gamesManager.GetGameState(gameId).game!.Players[1].ConnectionId == "bumba-connection");
+        }
+
+        [Fact]
+        public void TestGameDisconnectCleanup()
+        {
+            Mock<ILogger<GamesManager>> mockLogger = new();
+            GamesManager gamesManager = new(mockLogger.Object);
+
+            int gameStateUpdateCount = 0;
+            gamesManager.GameStateUpdated += (_, _) => gameStateUpdateCount++;
+
+            GameId gameId1 = gamesManager.CreateGame();
+
+            gamesManager.AddPlayerToGame(gameId1, new("ayaya"));
+            gamesManager.MarkPlayerConnected(gameId1, new("ayaya"), "ayaya-connection");
+            gamesManager.MarkPlayerDisconnected("ayaya-connection");
+            Assert.False(gamesManager.GetGameState(gameId1).success);
+
+            GameId gameId2 = gamesManager.CreateGame();
+
+            gamesManager.AddPlayerToGame(gameId2, new("ayaya"));
+            gamesManager.MarkPlayerConnected(gameId2, new("ayaya"), "ayaya-connection");
+            gamesManager.AddPlayerToGame(gameId2, new("bumba"));
+            gamesManager.MarkPlayerConnected(gameId2, new("bumba"), "bumba-connection");
+
+            gamesManager.MarkPlayerDisconnected("bumba-connection");
+            Assert.True(gamesManager.GetGameState(gameId2).success);
+
+            gamesManager.MarkPlayerDisconnected("ayaya-connection");
+            Assert.False(gamesManager.GetGameState(gameId2).success);
         }
     }
 }
