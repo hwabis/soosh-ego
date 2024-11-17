@@ -120,8 +120,16 @@ namespace SooshEgoServer.GameLogic
         {
             lock (gamesLock)
             {
-                Player? matchingPlayer = games.Values
-                    .SelectMany(game => game.Players)
+                Game? matchingGame = games.Values
+                    .FirstOrDefault(game => game.Players.Any(player => player.ConnectionId == connectionId));
+
+                if (matchingGame == null)
+                {
+                    logger.LogWarning("Disconnect received for connection {ConnectionId} which was not in a game", connectionId);
+                    return;
+                }
+
+                Player? matchingPlayer = matchingGame.Players
                     .FirstOrDefault(player => player.ConnectionId == connectionId);
 
                 if (matchingPlayer == null)
@@ -130,15 +138,12 @@ namespace SooshEgoServer.GameLogic
                     return;
                 }
 
-                Game? matchingGame = games.Values
-                    .FirstOrDefault(game => game.Players.Any(player => player.ConnectionId == connectionId));
-
                 matchingPlayer.ConnectionId = null;
 
-                if (matchingGame == null)
+                if (matchingGame.Players.All(player => player.ConnectionId == null))
                 {
-                    logger.LogWarning("Disconnect received for connection {ConnectionId} which was not in a game", connectionId);
-                    return;
+                    games.Remove(matchingGame.GameId);
+                    logger.LogInformation("Removed inactive game {GameId}", matchingGame.GameId);
                 }
 
                 GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));

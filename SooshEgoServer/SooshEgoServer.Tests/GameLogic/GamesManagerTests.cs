@@ -83,8 +83,12 @@ namespace SooshEgoServer.Tests.GameLogic
             gamesManager.AddPlayerToGame(gameId, new("bumba"));
             Assert.True(gameStateUpdateCount == 3);
 
-            gamesManager.MarkPlayerDisconnected("ayaya-connection");
+            gamesManager.MarkPlayerConnected(gameId, new("bumba"), "bumba-connection");
             Assert.True(gameStateUpdateCount == 4);
+            Assert.True(gamesManager.GetGameState(gameId).game!.Players[1].ConnectionId == "bumba-connection");
+
+            gamesManager.MarkPlayerDisconnected("ayaya-connection");
+            Assert.True(gameStateUpdateCount == 5);
             Assert.Null(gamesManager.GetGameState(gameId).game!.Players[0].ConnectionId);
         }
     }
