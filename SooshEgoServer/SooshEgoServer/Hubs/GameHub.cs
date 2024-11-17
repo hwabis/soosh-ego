@@ -11,5 +11,17 @@ namespace SooshEgoServer.Hubs
         {
             this.gamesManager = gamesManager;
         }
+
+        public void JoinGame(GameId gameId, PlayerName playerName)
+        {
+            gamesManager.OnPlayerJoin(gameId, playerName, Context.ConnectionId);
+        }
+
+        public override Task OnDisconnectedAsync(Exception? exception)
+        {
+            gamesManager.OnPlayerLeave(Context.ConnectionId);
+
+            return base.OnDisconnectedAsync(exception);
+        }
     }
 }

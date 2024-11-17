@@ -4,6 +4,8 @@
     {
         public readonly PlayerName Name;
 
+        public string? ConnectionId { get; set; }
+
         public Player(PlayerName name)
         {
             Name = name;

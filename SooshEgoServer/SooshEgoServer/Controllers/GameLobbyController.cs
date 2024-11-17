@@ -20,24 +20,16 @@ namespace SooshEgoServer.Controllers
         [HttpPost("create")]
         public IActionResult CreateGame()
         {
-            GameId? gameId = gamesManager.CreateGame();
+            GameId gameId = gamesManager.CreateGame();
 
-            if (gameId != null)
-            {
-                logger.LogInformation("Created {GameId}", gameId);
-                return CreatedAtAction("", gameId);
-            }
-            else
-            {
-                logger.LogWarning("Could not create a game");
-                return NotFound();
-            }
+            logger.LogInformation("Created {GameId}", gameId);
+            return CreatedAtAction("", gameId);
         }
 
         [HttpPost("join")]
         public IActionResult JoinGame([FromBody] JoinGameRequest request)
         {
-            bool joined = gamesManager.JoinGame(request.GameId, request.PlayerName);
+            bool joined = gamesManager.AddPlayerToGame(request.GameId, request.PlayerName);
 
             if (joined)
             {
