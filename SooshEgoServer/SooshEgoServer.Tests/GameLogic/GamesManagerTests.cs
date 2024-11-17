@@ -4,7 +4,7 @@ using SooshEgoServer.GameLogic;
 using SooshEgoServer.GameLogic.Models;
 using Xunit;
 
-namespace SooshEgoServer.Tests
+namespace SooshEgoServer.Tests.GameLogic
 {
     public class GamesManagerTests
     {
@@ -30,7 +30,7 @@ namespace SooshEgoServer.Tests
 
             Assert.True(gamesManager.GetGameState(gameId).success
                 && gamesManager.GetGameState(gameId).game!.Players.Count() == 0);
-            
+
             Assert.False(gamesManager.AddPlayerToGame(gameId, new PlayerName("")).success);
             Assert.True(gamesManager.GetGameState(gameId).success
                 && gamesManager.GetGameState(gameId).game!.Players.Count() == 0);

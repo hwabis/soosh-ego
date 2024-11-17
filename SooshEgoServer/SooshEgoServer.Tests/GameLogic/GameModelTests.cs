@@ -1,4 +1,4 @@
-﻿namespace SooshEgoServer.Tests
+﻿namespace SooshEgoServer.Tests.GameLogic
 {
     public class GameModelTests
     {

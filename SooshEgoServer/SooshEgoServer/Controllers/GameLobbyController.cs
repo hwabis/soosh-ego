@@ -5,6 +5,7 @@ using SooshEgoServer.GameLogic.Models;
 
 namespace SooshEgoServer.Controllers
 {
+    // todo controller-level unit test?
     [ApiController]
     [Route("[controller]")]
     public class GameLobbyController : ControllerBase

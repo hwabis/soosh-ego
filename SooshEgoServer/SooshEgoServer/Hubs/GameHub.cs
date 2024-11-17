@@ -4,6 +4,7 @@ using SooshEgoServer.GameLogic.Models;
 
 namespace SooshEgoServer.Hubs
 {
+    // todo hub-level unit test?
     public class GameHub : Hub
     {
         private readonly IGamesManager gamesManager;
