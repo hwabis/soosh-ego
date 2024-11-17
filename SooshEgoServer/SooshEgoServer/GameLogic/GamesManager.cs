@@ -116,7 +116,7 @@
                 }
                 else
                 {
-                    logger.LogError("A player disconnected while not in a game");
+                    logger.LogError("A player who was not in a game disconnected");
                     throw new Exception();
                 }
             }
