@@ -66,6 +66,8 @@ namespace SooshEgoServer.GameLogic
 
                 matchingGame.Players.Add(new Player(playerName));
 
+                GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));
+
                 return (true, "");
             }
         }
@@ -133,10 +135,10 @@ namespace SooshEgoServer.GameLogic
                     return;
                 }
 
-                matchingPlayer.ConnectionId = null;
-
                 Game? matchingGame = games
                     .FirstOrDefault(game => game.Players.Any(player => player.ConnectionId == connectionId));
+
+                matchingPlayer.ConnectionId = null;
 
                 if (matchingGame == null)
                 {

@@ -59,5 +59,33 @@ namespace SooshEgoServer.Tests.GameLogic
             Assert.False(gamesManager.AddPlayerToGame(new GameId("mystery lobby"), new PlayerName("mr. lost")).success);
             Assert.False(gamesManager.GetGameState(new GameId("mystery lobby")).success);
         }
+
+        [Fact]
+        public void TestGameStateEventAndConnections()
+        {
+            Mock<ILogger<GamesManager>> mockLogger = new();
+            GamesManager gamesManager = new(mockLogger.Object);
+
+            int gameStateUpdateCount = 0;
+            gamesManager.GameStateUpdated += (_, _) => gameStateUpdateCount++;
+
+            GameId gameId = gamesManager.CreateGame();
+            Assert.True(gameStateUpdateCount == 0);
+
+            gamesManager.AddPlayerToGame(gameId, new("ayaya"));
+            Assert.True(gameStateUpdateCount == 1);
+            Assert.True(gamesManager.GetGameState(gameId).game!.Players[0].ConnectionId == null);
+
+            gamesManager.MarkPlayerConnected(gameId, new("ayaya"), "ayaya-connection");
+            Assert.True(gameStateUpdateCount == 2);
+            Assert.True(gamesManager.GetGameState(gameId).game!.Players[0].ConnectionId == "ayaya-connection");
+
+            gamesManager.AddPlayerToGame(gameId, new("bumba"));
+            Assert.True(gameStateUpdateCount == 3);
+
+            gamesManager.MarkPlayerDisconnected("ayaya-connection");
+            Assert.True(gameStateUpdateCount == 4);
+            Assert.Null(gamesManager.GetGameState(gameId).game!.Players[0].ConnectionId);
+        }
     }
 }
