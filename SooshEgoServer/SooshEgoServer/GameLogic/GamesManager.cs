@@ -104,6 +104,12 @@ namespace SooshEgoServer.GameLogic
                     throw new Exception();
                 }
 
+                if (player.ConnectionId != null)
+                {
+                    logger.LogError("{PlayerName} tried to join {GameId}, but that player was already marked as connected", playerName, gameId);
+                    throw new Exception();
+                }
+
                 player.ConnectionId = connectionId;
             }
         }
