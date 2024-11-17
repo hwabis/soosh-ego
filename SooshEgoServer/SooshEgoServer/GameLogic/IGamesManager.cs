@@ -9,7 +9,7 @@ namespace SooshEgoServer.GameLogic
         public GameId CreateGame();
 
         public (bool success, string errorMessage) AddPlayerToGame(GameId gameId, PlayerName playerName);
-        public (bool success, IEnumerable<PlayerName> playerNames) GetPlayerNames(GameId gameId); // todo return entire gamestate?
+        public (bool success, Game? game) GetGameState(GameId gameId);
 
         public void MarkPlayerConnected(GameId gameId, PlayerName playerName, string connectionId);
         public void MarkPlayerDisconnected(string playerConnectionId);

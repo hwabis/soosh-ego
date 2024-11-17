@@ -71,7 +71,7 @@ namespace SooshEgoServer.GameLogic
             }
         }
 
-        public (bool success, IEnumerable<PlayerName> playerNames) GetPlayerNames(GameId gameId)
+        public (bool success, Game? game) GetGameState(GameId gameId)
         {
             lock (gamesLock)
             {
@@ -79,11 +79,11 @@ namespace SooshEgoServer.GameLogic
 
                 if (matchingGame == null)
                 {
-                    logger.LogWarning("Tried to get player names of non-existent game {GameId}", gameId);
-                    return (false, []);
+                    logger.LogWarning("Tried to get non-existent game {GameId}", gameId);
+                    return (false, null);
                 }
 
-                return (true, matchingGame.Players.Select(player => player.Name));
+                return (true, matchingGame);
             }
         }
 

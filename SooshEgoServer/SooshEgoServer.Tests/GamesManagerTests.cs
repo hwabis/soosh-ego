@@ -28,17 +28,17 @@ namespace SooshEgoServer.Tests
 
             GameId gameId = gamesManager.CreateGame();
 
-            Assert.True(gamesManager.GetPlayerNames(gameId).success
-                && gamesManager.GetPlayerNames(gameId).playerNames.Count() == 0);
+            Assert.True(gamesManager.GetGameState(gameId).success
+                && gamesManager.GetGameState(gameId).game!.Players.Count() == 0);
             
             Assert.False(gamesManager.AddPlayerToGame(gameId, new PlayerName("")).success);
-            Assert.True(gamesManager.GetPlayerNames(gameId).success
-                && gamesManager.GetPlayerNames(gameId).playerNames.Count() == 0);
+            Assert.True(gamesManager.GetGameState(gameId).success
+                && gamesManager.GetGameState(gameId).game!.Players.Count() == 0);
 
             Assert.True(gamesManager.AddPlayerToGame(gameId, new PlayerName("1")).success);
-            Assert.True(gamesManager.GetPlayerNames(gameId).success
-                && gamesManager.GetPlayerNames(gameId).playerNames.Count() == 1
-                && gamesManager.GetPlayerNames(gameId).playerNames.First()?.Value == "1");
+            Assert.True(gamesManager.GetGameState(gameId).success
+                && gamesManager.GetGameState(gameId).game!.Players.Count() == 1
+                && gamesManager.GetGameState(gameId).game!.Players.First()?.Name.Value == "1");
 
             Assert.False(gamesManager.AddPlayerToGame(gameId, new PlayerName("1")).success);
 
@@ -57,7 +57,7 @@ namespace SooshEgoServer.Tests
             GamesManager gamesManager = new(mockLogger.Object);
 
             Assert.False(gamesManager.AddPlayerToGame(new GameId("mystery lobby"), new PlayerName("mr. lost")).success);
-            Assert.False(gamesManager.GetPlayerNames(new GameId("mystery lobby")).success);
+            Assert.False(gamesManager.GetGameState(new GameId("mystery lobby")).success);
         }
     }
 }
