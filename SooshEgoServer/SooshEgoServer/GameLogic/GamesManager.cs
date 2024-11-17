@@ -1,4 +1,6 @@
-﻿namespace SooshEgoServer.GameLogic
+﻿using System.Data;
+
+namespace SooshEgoServer.GameLogic
 {
     public class GamesManager : IGamesManager
     {
@@ -28,58 +30,57 @@
             }
         }
 
-        public bool AddPlayerToGame(GameId gameId, PlayerName playerName)
+        public (bool success, string errorMessage) AddPlayerToGame(GameId gameId, PlayerName playerName)
         {
             if (playerName.Value == string.Empty)
             {
-                return false;
+                return (false, "Player name cannot be empty.");
             }
 
             lock (gamesLock)
             {
                 Game? matchingGame = games.FirstOrDefault(game => game.GameId == gameId);
 
-                if (matchingGame != null)
+                if (matchingGame == null)
                 {
-                    if (matchingGame.Players.Count >= gamePlayerLimit)
-                    {
-                        if (matchingGame.Players.Count > gamePlayerLimit)
-                        {
-                            logger.LogError("There were more than {GamePlayerLimit} players in {GameId}", gamePlayerLimit, gameId);
-                            throw new Exception();
-                        }
-
-                        return false;
-                    }
-
-                    if (matchingGame.Players.Any(player => player.Name == playerName))
-                    {
-                        return false;
-                    }
-
-                    matchingGame.Players.Add(new Player(playerName));
-                    return true;
+                    return (false, "There is no game with the specified game ID.");
                 }
 
-                return false;
+                if (matchingGame.Players.Count >= gamePlayerLimit)
+                {
+                    if (matchingGame.Players.Count > gamePlayerLimit)
+                    {
+                        logger.LogError("There were more than {GamePlayerLimit} players in {GameId}", gamePlayerLimit, gameId);
+                        throw new Exception();
+                    }
+
+                    return (false, "The game's player limit is full.");
+                }
+
+                if (matchingGame.Players.Any(player => player.Name == playerName))
+                {
+                    return (false, "That name is already taken.");
+                }
+
+                matchingGame.Players.Add(new Player(playerName));
+
+                return (true, "");
             }
         }
 
-        public IEnumerable<PlayerName>? GetPlayerNames(GameId gameId)
+        public (bool success, IEnumerable<PlayerName> playerNames) GetPlayerNames(GameId gameId)
         {
             lock (gamesLock)
             {
                 Game? matchingGame = games.FirstOrDefault(game => game.GameId == gameId);
 
-                if (matchingGame != null)
+                if (matchingGame == null)
                 {
-                    return matchingGame.Players.Select(player => player.Name);
+                    logger.LogWarning("Tried to get player names of non-existent game {GameId}", gameId);
+                    return (false, []);
                 }
-                else
-                {
-                    logger.LogError("Tried to get player names of non-existent game {GameId}", gameId);
-                    return null;
-                }
+
+                return (true, matchingGame.Players.Select(player => player.Name));
             }
         }
 
@@ -89,25 +90,21 @@
             {
                 Game? matchingGame = games.FirstOrDefault(game => game.GameId == gameId);
 
-                if (matchingGame != null)
-                {
-                    Player? player = matchingGame.Players.FirstOrDefault(player => player.Name == playerName);
-
-                    if (player != null)
-                    {
-                        player.ConnectionId = connectionId;
-                    }
-                    else
-                    {
-                        logger.LogError("{PlayerName} tried to join {GameId}, but the player did not exist in the game", playerName, gameId);
-                        throw new Exception();
-                    }
-                }
-                else
+                if (matchingGame == null)
                 {
                     logger.LogError("{PlayerName} tried to join {GameId}, but the game did not exist", playerName, gameId);
                     throw new Exception();
                 }
+
+                Player? player = matchingGame.Players.FirstOrDefault(player => player.Name == playerName);
+
+                if (player == null)
+                {
+                    logger.LogError("{PlayerName} tried to join {GameId}, but the player did not exist in the game", playerName, gameId);
+                    throw new Exception();
+                }
+
+                player.ConnectionId = connectionId;
             }
         }
 
@@ -115,28 +112,18 @@
         {
             lock (gamesLock)
             {
-                Player? matchingPlayer = null;
+                // todo change games to dict so we don't have to linq
+                Player? matchingPlayer = games
+                    .SelectMany(game => game.Players)
+                    .FirstOrDefault(player => player.ConnectionId == connectionId);
 
-                foreach (Game game in games)
+                if (matchingPlayer == null)
                 {
-                    // todo change games to dict so we don't have to linq
-                    Player? potentiallyMatchingPlayer = game.Players.FirstOrDefault(player => player.ConnectionId == connectionId);
-
-                    if (potentiallyMatchingPlayer != null)
-                    {
-                        matchingPlayer = potentiallyMatchingPlayer;
-                    }
+                    logger.LogWarning("Disconnect received for unknown connection {ConnectionId}", connectionId);
+                    return;
                 }
 
-                if (matchingPlayer != null)
-                {
-                    matchingPlayer.ConnectionId = null;
-                }
-                else
-                {
-                    logger.LogError("A player who was not in a game disconnected");
-                    throw new Exception();
-                }
+                matchingPlayer.ConnectionId = null;
             }
         }
     }

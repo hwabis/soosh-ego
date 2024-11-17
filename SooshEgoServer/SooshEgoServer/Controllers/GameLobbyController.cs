@@ -29,16 +29,16 @@ namespace SooshEgoServer.Controllers
         [HttpPost("join")]
         public IActionResult JoinGame([FromBody] JoinGameRequest request)
         {
-            bool joined = gamesManager.AddPlayerToGame(request.GameId, request.PlayerName);
+            (bool success, string error) = gamesManager.AddPlayerToGame(request.GameId, request.PlayerName);
 
-            if (joined)
+            if (success)
             {
                 logger.LogInformation("{PlayerName} joined {GameId}", request.PlayerName, request.GameId);
                 return Ok();
             }
             else
             {
-                logger.LogInformation("{PlayerName} could not join {GameId}", request.PlayerName, request.GameId);
+                logger.LogInformation("{PlayerName} could not join {GameId} - {Error}", request.PlayerName, request.GameId, error);
                 return NotFound();
             }
         }

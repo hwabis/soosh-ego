@@ -27,16 +27,16 @@ namespace SooshEgoServer.Tests
 
             GameId gameId = gamesManager.CreateGame();
 
-            Assert.False(gamesManager.AddPlayerToGame(gameId, new PlayerName("")));
-            Assert.True(gamesManager.AddPlayerToGame(gameId, new PlayerName("1")));
-            Assert.False(gamesManager.AddPlayerToGame(gameId, new PlayerName("1")));
-            Assert.True(gamesManager.AddPlayerToGame(gameId, new PlayerName("2")));
-            Assert.True(gamesManager.AddPlayerToGame(gameId, new PlayerName("3")));
-            Assert.True(gamesManager.AddPlayerToGame(gameId, new PlayerName("4")));
-            Assert.True(gamesManager.AddPlayerToGame(gameId, new PlayerName("5")));
-            Assert.False(gamesManager.AddPlayerToGame(gameId, new PlayerName("6")));
+            Assert.False(gamesManager.AddPlayerToGame(gameId, new PlayerName("")).success);
+            Assert.True(gamesManager.AddPlayerToGame(gameId, new PlayerName("1")).success);
+            Assert.False(gamesManager.AddPlayerToGame(gameId, new PlayerName("1")).success);
+            Assert.True(gamesManager.AddPlayerToGame(gameId, new PlayerName("2")).success);
+            Assert.True(gamesManager.AddPlayerToGame(gameId, new PlayerName("3")).success);
+            Assert.True(gamesManager.AddPlayerToGame(gameId, new PlayerName("4")).success);
+            Assert.True(gamesManager.AddPlayerToGame(gameId, new PlayerName("5")).success);
+            Assert.False(gamesManager.AddPlayerToGame(gameId, new PlayerName("6")).success);
 
-            Assert.False(gamesManager.AddPlayerToGame(new GameId("mystery lobby"), new PlayerName("mr. lost")));
+            Assert.False(gamesManager.AddPlayerToGame(new GameId("mystery lobby"), new PlayerName("mr. lost")).success);
         }
     }
 }
