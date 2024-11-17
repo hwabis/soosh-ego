@@ -65,6 +65,24 @@
             }
         }
 
+        public IEnumerable<PlayerName>? GetPlayerNames(GameId gameId)
+        {
+            lock (gamesLock)
+            {
+                Game? matchingGame = games.FirstOrDefault(game => game.GameId == gameId);
+
+                if (matchingGame != null)
+                {
+                    return matchingGame.Players.Select(player => player.Name);
+                }
+                else
+                {
+                    logger.LogError("Tried to get player names of non-existent game {GameId}", gameId);
+                    return null;
+                }
+            }
+        }
+
         public void MarkPlayerConnected(GameId gameId, PlayerName playerName, string connectionId)
         {
             lock (gamesLock)

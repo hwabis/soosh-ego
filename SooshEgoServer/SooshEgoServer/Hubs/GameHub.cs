@@ -12,9 +12,14 @@ namespace SooshEgoServer.Hubs
             this.gamesManager = gamesManager;
         }
 
-        public void JoinGame(GameId gameId, PlayerName playerName)
+        public async Task JoinGame(GameId gameId, PlayerName playerName)
         {
             gamesManager.MarkPlayerConnected(gameId, playerName, Context.ConnectionId);
+            /*
+            await Groups.AddToGroupAsync(Context.ConnectionId, gameId.Value);
+            
+            IEnumerable<PlayerName>? namesList = gamesManager.GetPlayerNames(gameId);
+            await Clients.Group(gameId.Id).SendAsync("UpdatePlayerList", playerList);todo yo come back*/
         }
 
         public override Task OnDisconnectedAsync(Exception? exception)
