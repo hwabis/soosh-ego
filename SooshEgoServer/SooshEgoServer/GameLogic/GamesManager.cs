@@ -1,4 +1,5 @@
 ﻿using SooshEgoServer.GameLogic.Models;
+using System.Text;
 
 namespace SooshEgoServer.GameLogic
 {
@@ -6,10 +7,11 @@ namespace SooshEgoServer.GameLogic
     {
         private readonly ILogger<GamesManager> logger;
 
-        private List<Game> games = [];
-        private readonly object gamesLock = new();
-        private int gameIdCounter = 0; // todo come up with something cooler
+        private Dictionary<GameId, Game> games = [];
+        private const int gameIdLength = 6;
         private const int gamePlayerLimit = 5;
+
+        private readonly object gamesLock = new();
 
         public event EventHandler<GameStateUpdatedEventArgs>? GameStateUpdated;
 
@@ -22,11 +24,11 @@ namespace SooshEgoServer.GameLogic
         {
             lock (gamesLock)
             {
-                GameId newId = new(gameIdCounter.ToString());
+                // 6-digit string
+                GameId newId = createNewGameId();
                 Game newGame = new(newId);
-                games.Add(newGame);
 
-                gameIdCounter++;
+                games.Add(newId, newGame);
 
                 return newId;
             }
@@ -41,9 +43,7 @@ namespace SooshEgoServer.GameLogic
 
             lock (gamesLock)
             {
-                Game? matchingGame = games.FirstOrDefault(game => game.GameId == gameId);
-
-                if (matchingGame == null)
+                if (!games.TryGetValue(gameId, out Game? matchingGame))
                 {
                     return (false, "There is no game with the specified game ID.");
                 }
@@ -76,9 +76,7 @@ namespace SooshEgoServer.GameLogic
         {
             lock (gamesLock)
             {
-                Game? matchingGame = games.FirstOrDefault(game => game.GameId == gameId);
-
-                if (matchingGame == null)
+                if (!games.TryGetValue(gameId, out Game? matchingGame))
                 {
                     logger.LogWarning("Tried to get non-existent game {GameId}", gameId);
                     return (false, null);
@@ -92,9 +90,7 @@ namespace SooshEgoServer.GameLogic
         {
             lock (gamesLock)
             {
-                Game? matchingGame = games.FirstOrDefault(game => game.GameId == gameId);
-
-                if (matchingGame == null)
+                if (!games.TryGetValue(gameId, out Game? matchingGame))
                 {
                     logger.LogError("{PlayerName} tried to join {GameId}, but the game did not exist", playerName, gameId);
                     throw new Exception();
@@ -124,8 +120,7 @@ namespace SooshEgoServer.GameLogic
         {
             lock (gamesLock)
             {
-                // todo change games to dict so we don't have to linq
-                Player? matchingPlayer = games
+                Player? matchingPlayer = games.Values
                     .SelectMany(game => game.Players)
                     .FirstOrDefault(player => player.ConnectionId == connectionId);
 
@@ -135,7 +130,7 @@ namespace SooshEgoServer.GameLogic
                     return;
                 }
 
-                Game? matchingGame = games
+                Game? matchingGame = games.Values
                     .FirstOrDefault(game => game.Players.Any(player => player.ConnectionId == connectionId));
 
                 matchingPlayer.ConnectionId = null;
@@ -148,6 +143,25 @@ namespace SooshEgoServer.GameLogic
 
                 GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));
             }
+        }
+
+        private GameId createNewGameId()
+        {
+            const string charSet = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+            StringBuilder result = new(gameIdLength);
+
+            do
+            {
+                result.Clear();
+
+                for (int i = 0; i < gameIdLength; i++)
+                {
+                    result.Append(charSet[Random.Shared.Next(charSet.Length)]);
+                }
+            } while (games.ContainsKey(new(result.ToString())));
+
+            return new GameId(result.ToString());
         }
     }
 }
