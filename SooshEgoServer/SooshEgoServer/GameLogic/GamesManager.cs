@@ -1,5 +1,4 @@
-﻿using System.Data;
-using SooshEgoServer.GameLogic.Models;
+﻿using SooshEgoServer.GameLogic.Models;
 
 namespace SooshEgoServer.GameLogic
 {
