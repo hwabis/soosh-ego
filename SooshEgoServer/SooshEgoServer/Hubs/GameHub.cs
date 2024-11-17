@@ -14,12 +14,12 @@ namespace SooshEgoServer.Hubs
 
         public void JoinGame(GameId gameId, PlayerName playerName)
         {
-            gamesManager.OnPlayerJoin(gameId, playerName, Context.ConnectionId);
+            gamesManager.MarkPlayerConnected(gameId, playerName, Context.ConnectionId);
         }
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            gamesManager.OnPlayerLeave(Context.ConnectionId);
+            gamesManager.MarkPlayerDisconnected(Context.ConnectionId);
 
             return base.OnDisconnectedAsync(exception);
         }

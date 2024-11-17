@@ -43,7 +43,7 @@
             return false;
         }
 
-        public void OnPlayerJoin(GameId gameId, PlayerName playerName, string connectionId)
+        public void MarkPlayerConnected(GameId gameId, PlayerName playerName, string connectionId)
         {
             Game? matchingGame = games.FirstOrDefault(game => game.GameId == gameId);
 
@@ -66,7 +66,7 @@
             }
         }
 
-        public void OnPlayerLeave(string connectionId)
+        public void MarkPlayerDisconnected(string connectionId)
         {
             Player? matchingPlayer = null;
             
