@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SooshEgoServer.Controllers.RequestBodies;
 using SooshEgoServer.GameLogic;
+using SooshEgoServer.GameLogic.Models;
 
 namespace SooshEgoServer.Controllers
 {

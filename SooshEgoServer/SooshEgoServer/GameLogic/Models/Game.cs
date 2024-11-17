@@ -1,8 +1,13 @@
-﻿namespace SooshEgoServer.GameLogic
+﻿using System.Text.Json.Serialization;
+
+namespace SooshEgoServer.GameLogic.Models
 {
-    public class Game // todo is this serializable?
+    public class Game
     {
+        [JsonPropertyName("gameId")]
         public GameId GameId { get; init; }
+
+        [JsonPropertyName("players")]
         public List<Player> Players { get; init; } = [];
 
         public Game(GameId gameId)

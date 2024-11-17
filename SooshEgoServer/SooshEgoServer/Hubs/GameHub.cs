@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using SooshEgoServer.GameLogic;
+using SooshEgoServer.GameLogic.Models;
 
 namespace SooshEgoServer.Hubs
 {
@@ -31,7 +32,7 @@ namespace SooshEgoServer.Hubs
                 .Where(player => player.ConnectionId != null)
                 .Select(player => player.ConnectionId!);
 
-            await Clients.Clients(connectionIds).SendAsync("GameStateUpdated", e.Game); // todo client, todo test this invocation
+            await Clients.Clients(connectionIds).SendAsync("GameStateUpdated", e.Game); // todo client, todo test event invocation
         }
     }
 }

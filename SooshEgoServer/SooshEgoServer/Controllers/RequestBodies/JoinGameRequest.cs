@@ -1,4 +1,4 @@
-﻿using SooshEgoServer.GameLogic;
+﻿using SooshEgoServer.GameLogic.Models;
 
 namespace SooshEgoServer.Controllers.RequestBodies
 {

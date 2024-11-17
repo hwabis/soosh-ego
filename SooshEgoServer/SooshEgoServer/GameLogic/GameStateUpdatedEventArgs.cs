@@ -1,4 +1,6 @@
-﻿namespace SooshEgoServer.GameLogic
+﻿using SooshEgoServer.GameLogic.Models;
+
+namespace SooshEgoServer.GameLogic
 {
     public class GameStateUpdatedEventArgs : EventArgs
     {

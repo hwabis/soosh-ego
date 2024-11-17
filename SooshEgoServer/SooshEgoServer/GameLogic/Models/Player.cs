@@ -1,9 +1,13 @@
-﻿namespace SooshEgoServer.GameLogic
+﻿using System.Text.Json.Serialization;
+
+namespace SooshEgoServer.GameLogic.Models
 {
     public class Player
     {
-        public readonly PlayerName Name;
+        [JsonPropertyName("name")]
+        public PlayerName Name { get; init; }
 
+        [JsonIgnore]
         public string? ConnectionId { get; set; }
 
         public Player(PlayerName name)

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using SooshEgoServer.GameLogic;
+using SooshEgoServer.GameLogic.Models;
 using Xunit;
 
 namespace SooshEgoServer.Tests
