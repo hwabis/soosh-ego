@@ -22,7 +22,7 @@ namespace SooshEgoServer.Hubs
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            gamesManager.MarkPlayerDisconnected(Context.ConnectionId);
+            gamesManager.MarkPlayerDisconnectedAndCleanup(Context.ConnectionId);
 
             return base.OnDisconnectedAsync(exception);
         }

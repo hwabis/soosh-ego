@@ -116,7 +116,7 @@ namespace SooshEgoServer.GameLogic
             }
         }
 
-        public void MarkPlayerDisconnected(string connectionId)
+        public void MarkPlayerDisconnectedAndCleanup(string connectionId)
         {
             lock (gamesLock)
             {

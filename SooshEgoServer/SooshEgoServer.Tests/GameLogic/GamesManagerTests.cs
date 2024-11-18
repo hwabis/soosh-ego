@@ -87,7 +87,7 @@ namespace SooshEgoServer.Tests.GameLogic
             Assert.True(gameStateUpdateCount == 4);
             Assert.True(gamesManager.GetGameState(gameId).game!.Players[1].ConnectionId == "bumba-connection");
 
-            gamesManager.MarkPlayerDisconnected("ayaya-connection");
+            gamesManager.MarkPlayerDisconnectedAndCleanup("ayaya-connection");
             Assert.True(gameStateUpdateCount == 5);
             Assert.Null(gamesManager.GetGameState(gameId).game!.Players[0].ConnectionId);
             Assert.True(gamesManager.GetGameState(gameId).game!.Players[1].ConnectionId == "bumba-connection");
@@ -106,7 +106,7 @@ namespace SooshEgoServer.Tests.GameLogic
 
             gamesManager.AddPlayerToGame(gameId1, new("ayaya"));
             gamesManager.MarkPlayerConnected(gameId1, new("ayaya"), "ayaya-connection");
-            gamesManager.MarkPlayerDisconnected("ayaya-connection");
+            gamesManager.MarkPlayerDisconnectedAndCleanup("ayaya-connection");
             Assert.False(gamesManager.GetGameState(gameId1).success);
 
             GameId gameId2 = gamesManager.CreateGame();
@@ -116,10 +116,10 @@ namespace SooshEgoServer.Tests.GameLogic
             gamesManager.AddPlayerToGame(gameId2, new("bumba"));
             gamesManager.MarkPlayerConnected(gameId2, new("bumba"), "bumba-connection");
 
-            gamesManager.MarkPlayerDisconnected("bumba-connection");
+            gamesManager.MarkPlayerDisconnectedAndCleanup("bumba-connection");
             Assert.True(gamesManager.GetGameState(gameId2).success);
 
-            gamesManager.MarkPlayerDisconnected("ayaya-connection");
+            gamesManager.MarkPlayerDisconnectedAndCleanup("ayaya-connection");
             Assert.False(gamesManager.GetGameState(gameId2).success);
         }
     }
