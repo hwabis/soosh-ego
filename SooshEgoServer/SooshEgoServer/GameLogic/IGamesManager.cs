@@ -6,6 +6,8 @@ namespace SooshEgoServer.GameLogic
     {
         public event EventHandler<GameStateUpdatedEventArgs> GameStateUpdated;
 
+        #region In-lobby
+
         public GameId CreateGame();
 
         public (bool success, string errorMessage) AddPlayerToGame(GameId gameId, PlayerName playerName);
@@ -13,5 +15,11 @@ namespace SooshEgoServer.GameLogic
 
         public void MarkPlayerConnected(GameId gameId, PlayerName playerName, string connectionId);
         public void MarkPlayerDisconnected(string playerConnectionId);
+
+        #endregion
+
+        #region Gameplay
+
+        #endregion
     }
 }

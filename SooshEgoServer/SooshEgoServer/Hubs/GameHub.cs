@@ -15,7 +15,7 @@ namespace SooshEgoServer.Hubs
             this.gamesManager.GameStateUpdated += onGameStateUpdated;
         }
 
-        public void JoinGame(GameId gameId, PlayerName playerName)
+        public void ConnectToGame(GameId gameId, PlayerName playerName)
         {
             gamesManager.MarkPlayerConnected(gameId, playerName, Context.ConnectionId);
         }
