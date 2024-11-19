@@ -24,11 +24,11 @@ namespace SooshEgoServer.GameLogic
         {
             lock (gamesLock)
             {
-                // 6-digit string
                 GameId newId = createNewGameId();
                 Game newGame = new(newId);
 
                 games.Add(newId, newGame);
+                logger.LogInformation("Created {GameId}", newId);
 
                 return newId;
             }
@@ -65,6 +65,7 @@ namespace SooshEgoServer.GameLogic
                 }
 
                 matchingGame.Players.Add(new Player(playerName));
+                logger.LogInformation("{PlayerName} joined {GameId}", playerName, gameId);
 
                 GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));
 
@@ -111,6 +112,7 @@ namespace SooshEgoServer.GameLogic
                 }
 
                 player.ConnectionId = connectionId;
+                logger.LogInformation("{PlayerName} connected to {GameId}", playerName, gameId);
 
                 GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));
             }
@@ -139,6 +141,7 @@ namespace SooshEgoServer.GameLogic
                 }
 
                 matchingPlayer.ConnectionId = null;
+                logger.LogInformation("{PlayerName} disconnected from {GameId}", matchingPlayer.Name, matchingGame.GameId);
 
                 if (matchingGame.Players.All(player => player.ConnectionId == null))
                 {

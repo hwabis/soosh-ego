@@ -9,12 +9,10 @@ namespace SooshEgoServer.Controllers
     [Route("[controller]")]
     public class GameLobbyController : ControllerBase
     {
-        private readonly ILogger<GameLobbyController> logger;
         private readonly IGamesManager gamesManager;
 
-        public GameLobbyController(ILogger<GameLobbyController> logger, IGamesManager gamesManager)
+        public GameLobbyController(IGamesManager gamesManager)
         {
-            this.logger = logger;
             this.gamesManager = gamesManager;
         }
 
@@ -22,7 +20,6 @@ namespace SooshEgoServer.Controllers
         public IActionResult CreateGame()
         {
             GameId gameId = gamesManager.CreateGame();
-            logger.LogInformation("Created {GameId}", gameId);
 
             return Ok(gameId);
         }
@@ -34,11 +31,9 @@ namespace SooshEgoServer.Controllers
 
             if (!success)
             {
-                logger.LogInformation("{PlayerName} could not join {GameId} - {Error}", playerName, gameId, error);
                 return BadRequest(error);
             }
 
-            logger.LogInformation("{PlayerName} joined {GameId}", playerName, gameId);
             return Ok();
         }
     }
