@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SooshEgoServer.Controllers.RequestBodies;
 using SooshEgoServer.GameLogic;
 using SooshEgoServer.GameLogic.Models;
 
@@ -23,26 +22,24 @@ namespace SooshEgoServer.Controllers
         public IActionResult CreateGame()
         {
             GameId gameId = gamesManager.CreateGame();
-
             logger.LogInformation("Created {GameId}", gameId);
-            return CreatedAtAction("", gameId);
+
+            return Ok(gameId);
         }
 
-        [HttpPost("join")]
-        public IActionResult JoinGame([FromBody] JoinGameRequest request)
+        [HttpPost("{gameId}/join")]
+        public IActionResult JoinGame([FromRoute] string gameId, [FromBody] string playerName)
         {
-            (bool success, string error) = gamesManager.AddPlayerToGame(request.GameId, request.PlayerName);
+            (bool success, string error) = gamesManager.AddPlayerToGame(new(gameId), new(playerName));
 
-            if (success)
+            if (!success)
             {
-                logger.LogInformation("{PlayerName} joined {GameId}", request.PlayerName, request.GameId);
-                return Ok();
+                logger.LogInformation("{PlayerName} could not join {GameId} - {Error}", playerName, gameId, error);
+                return BadRequest(error);
             }
-            else
-            {
-                logger.LogInformation("{PlayerName} could not join {GameId} - {Error}", request.PlayerName, request.GameId, error);
-                return NotFound();
-            }
+
+            logger.LogInformation("{PlayerName} joined {GameId}", playerName, gameId);
+            return Ok();
         }
     }
 }
