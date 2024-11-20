@@ -1,10 +1,17 @@
 const GameLobby = () => {
   return (
-    <>
-      <h1 className="text-3xl font-bold underline">
-        henlo
-      </h1>
-    </>
+    <div>
+      <div>
+        <label>Your name: </label>
+        <input type="text" />
+      </div>
+      <button>Create New Game</button>
+      <div>
+        <label>Game ID: </label>
+        <input type="text" />
+      </div>
+      <button>Join Game</button>
+    </div>
   );
 }
 
