@@ -21,13 +21,13 @@ namespace SooshEgoServer.Controllers
         {
             GameId gameId = gamesManager.CreateGame();
 
-            return Ok(gameId.ToString());
+            return Ok(gameId);
         }
 
-        [HttpPost("{gameId}/join")]
-        public IActionResult JoinGame([FromRoute] string gameId, [FromBody] string playerName)
+        [HttpPost("join")]
+        public IActionResult JoinGame([FromBody] JoinGameRequest request)
         {
-            (bool success, string error) = gamesManager.AddPlayerToGame(new(gameId), new(playerName));
+            (bool success, string error) = gamesManager.AddPlayerToGame(request.GameId, request.PlayerName);
 
             if (!success)
             {
@@ -36,5 +36,7 @@ namespace SooshEgoServer.Controllers
 
             return Ok();
         }
+
+        public record JoinGameRequest(GameId GameId, PlayerName PlayerName);
     }
 }
