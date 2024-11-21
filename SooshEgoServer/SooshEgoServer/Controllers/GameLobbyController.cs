@@ -21,7 +21,7 @@ namespace SooshEgoServer.Controllers
         {
             GameId gameId = gamesManager.CreateGame();
 
-            return Ok(gameId);
+            return Ok(gameId.ToString());
         }
 
         [HttpPost("{gameId}/join")]
