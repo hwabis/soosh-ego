@@ -29,15 +29,15 @@ namespace SooshEgoServer.Tests.GameLogic
             GameId gameId = gamesManager.CreateGame();
 
             Assert.True(gamesManager.GetGameState(gameId).success
-                && gamesManager.GetGameState(gameId).game!.Players.Count() == 0);
+                && gamesManager.GetGameState(gameId).game!.Players.Count == 0);
 
             Assert.False(gamesManager.AddPlayerToGame(gameId, new PlayerName("")).success);
             Assert.True(gamesManager.GetGameState(gameId).success
-                && gamesManager.GetGameState(gameId).game!.Players.Count() == 0);
+                && gamesManager.GetGameState(gameId).game!.Players.Count == 0);
 
             Assert.True(gamesManager.AddPlayerToGame(gameId, new PlayerName("1")).success);
             Assert.True(gamesManager.GetGameState(gameId).success
-                && gamesManager.GetGameState(gameId).game!.Players.Count() == 1
+                && gamesManager.GetGameState(gameId).game!.Players.Count == 1
                 && gamesManager.GetGameState(gameId).game!.Players.First()?.Name.Value == "1");
 
             Assert.False(gamesManager.AddPlayerToGame(gameId, new PlayerName("1")).success);

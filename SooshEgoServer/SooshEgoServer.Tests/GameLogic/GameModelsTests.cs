@@ -11,11 +11,11 @@ namespace SooshEgoServer.Tests.GameLogic
         {
             Game game = new(new("bomba"))
             {
-                Players = new List<Player>
-                {
-                    new Player(new("gragas")),
-                    new Player(new("jonx")),
-                }
+                Players =
+                [
+                    new(new("gragas")),
+                    new(new("jonx")),
+                ]
             };
 
             string json = JsonSerializer.Serialize(game);

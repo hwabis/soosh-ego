@@ -7,15 +7,8 @@ namespace SooshEgoServer.Controllers
     // todo controller-level unit test?
     [ApiController]
     [Route("[controller]")]
-    public class GameLobbyController : ControllerBase
+    public class GameLobbyController(IGamesManager gamesManager) : ControllerBase
     {
-        private readonly IGamesManager gamesManager;
-
-        public GameLobbyController(IGamesManager gamesManager)
-        {
-            this.gamesManager = gamesManager;
-        }
-
         [HttpPost("create")]
         public IActionResult CreateGame()
         {

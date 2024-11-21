@@ -2,18 +2,13 @@
 
 namespace SooshEgoServer.GameLogic.Models
 {
-    public class Game
+    public class Game(GameId gameId)
     {
         [JsonPropertyName("gameId")]
-        public GameId GameId { get; init; }
+        public GameId GameId { get; init; } = gameId;
 
         [JsonPropertyName("players")]
         public List<Player> Players { get; init; } = [];
-
-        public Game(GameId gameId)
-        {
-            GameId = gameId;
-        }
     }
 
     public record GameId(string Value);

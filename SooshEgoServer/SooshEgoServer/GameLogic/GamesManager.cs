@@ -3,11 +3,9 @@ using System.Text;
 
 namespace SooshEgoServer.GameLogic
 {
-    public class GamesManager : IGamesManager
+    public class GamesManager(ILogger<GamesManager> logger) : IGamesManager
     {
-        private readonly ILogger<GamesManager> logger;
-
-        private Dictionary<GameId, Game> games = [];
+        private readonly Dictionary<GameId, Game> games = [];
         private const int gameIdLength = 6;
         private const int gamePlayerLimit = 5;
 
@@ -15,16 +13,11 @@ namespace SooshEgoServer.GameLogic
 
         public event EventHandler<GameStateUpdatedEventArgs>? GameStateUpdated;
 
-        public GamesManager(ILogger<GamesManager> logger)
-        {
-            this.logger = logger;
-        }
-
         public GameId CreateGame()
         {
             lock (gamesLock)
             {
-                GameId newId = createNewGameId();
+                GameId newId = CreateNewGameId();
                 Game newGame = new(newId);
 
                 games.Add(newId, newGame);
@@ -153,7 +146,7 @@ namespace SooshEgoServer.GameLogic
             }
         }
 
-        private GameId createNewGameId()
+        private GameId CreateNewGameId()
         {
             const string charSet = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
