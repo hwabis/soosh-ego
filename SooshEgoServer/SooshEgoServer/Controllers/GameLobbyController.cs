@@ -6,19 +6,27 @@ namespace SooshEgoServer.Controllers
 {
     // todo controller-level unit test?
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/gamelobby")]
     public class GameLobbyController(IGamesManager gamesManager) : ControllerBase
     {
         [HttpPost("create")]
-        public IActionResult CreateGame()
+        public IActionResult CreateAndJoinGame([FromBody] PlayerName playerName)
         {
             GameId gameId = gamesManager.CreateGame();
+
+            (bool success, string error) = gamesManager.AddPlayerToGame(gameId, playerName);
+
+            if (!success)
+            {
+                gamesManager.DeleteGame(gameId);
+                return BadRequest(error);
+            }
 
             return Ok(gameId);
         }
 
         [HttpPost("join")]
-        public IActionResult JoinGame([FromBody] JoinGameRequest request)
+        public IActionResult JoinExistingGame([FromBody] JoinGameRequest request)
         {
             (bool success, string error) = gamesManager.AddPlayerToGame(request.GameId, request.PlayerName);
 

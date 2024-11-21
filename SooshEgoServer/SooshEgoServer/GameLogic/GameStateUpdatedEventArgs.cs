@@ -2,13 +2,8 @@
 
 namespace SooshEgoServer.GameLogic
 {
-    public class GameStateUpdatedEventArgs : EventArgs
+    public class GameStateUpdatedEventArgs(Game game) : EventArgs
     {
-        public Game Game { get; }
-
-        public GameStateUpdatedEventArgs(Game game)
-        {
-            Game = game;
-        }
+        public Game Game { get; } = game;
     }
 }

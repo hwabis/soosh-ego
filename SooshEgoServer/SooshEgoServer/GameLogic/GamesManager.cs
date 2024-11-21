@@ -27,6 +27,14 @@ namespace SooshEgoServer.GameLogic
             }
         }
 
+        public void DeleteGame(GameId gameId)
+        {
+            lock (gamesLock)
+            {
+                games.Remove(gameId);
+            }
+        }
+
         public (bool success, string errorMessage) AddPlayerToGame(GameId gameId, PlayerName playerName)
         {
             if (playerName.Value == string.Empty)

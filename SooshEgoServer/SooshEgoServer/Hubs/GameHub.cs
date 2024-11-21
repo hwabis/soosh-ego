@@ -12,7 +12,7 @@ namespace SooshEgoServer.Hubs
         public GameHub(IGamesManager gamesManager)
         {
             this.gamesManager = gamesManager;
-            this.gamesManager.GameStateUpdated += onGameStateUpdated;
+            this.gamesManager.GameStateUpdated += OnGameStateUpdated;
         }
 
         public void ConnectToGame(GameId gameId, PlayerName playerName)
@@ -27,7 +27,7 @@ namespace SooshEgoServer.Hubs
             return base.OnDisconnectedAsync(exception);
         }
 
-        private async void onGameStateUpdated(object? sender, GameStateUpdatedEventArgs e)
+        private async void OnGameStateUpdated(object? sender, GameStateUpdatedEventArgs e)
         {
             IEnumerable<string> connectionIds = e.Game.Players
                 .Where(player => player.ConnectionId != null)

@@ -1,13 +1,19 @@
 import { useState } from "react";
 
 const GameLobby = () => {
+  const [playerName, setPlayerName] = useState('');
+  // todo entered game id
   const [createdGameId, setCreatedGameId] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const createGame = async () => {
+  const handleCreateGame = async () => {
     try {
-      const response = await fetch('https://localhost:5001/GameLobby/create', { // todo local vs env links ???
-        method: 'POST'
+      const response = await fetch('https://localhost:5001/api/gamelobby/create', { // todo local vs env links ???
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ Value: playerName })
       });
 
       if (!response.ok) {
@@ -30,9 +36,9 @@ const GameLobby = () => {
     <div>
       <div>
         <label>Your name: </label>
-        <input type="text" />
+        <input type="text" value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
       </div>
-      <button onClick={createGame}>Create New Game</button>
+      <button onClick={handleCreateGame}>Create New Game</button>
       <div>
         <label>Game ID: </label>
         <input type="text" />

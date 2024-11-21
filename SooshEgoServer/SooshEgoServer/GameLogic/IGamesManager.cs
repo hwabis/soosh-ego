@@ -9,6 +9,7 @@ namespace SooshEgoServer.GameLogic
         #region In-lobby
 
         public GameId CreateGame();
+        public void DeleteGame(GameId gameId);
 
         public (bool success, string errorMessage) AddPlayerToGame(GameId gameId, PlayerName playerName);
         public (bool success, Game? game) GetGameState(GameId gameId);
