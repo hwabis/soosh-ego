@@ -21,6 +21,21 @@ namespace SooshEgoServer.Tests.GameLogic
         }
 
         [Fact]
+        public void TestManualGameDeletion()
+        {
+            Mock<ILogger<GamesManager>> mockLogger = new();
+            GamesManager gamesManager = new(mockLogger.Object);
+
+            GameId gameId1 = gamesManager.CreateGame();
+            GameId gameId2 = gamesManager.CreateGame();
+
+            gamesManager.DeleteGame(gameId1);
+
+            Assert.False(gamesManager.GetGameState(gameId1).success);
+            Assert.True(gamesManager.GetGameState(gameId2).success);
+        }
+
+        [Fact]
         public void TestAddAndGetPlayers()
         {
             Mock<ILogger<GamesManager>> mockLogger = new();
