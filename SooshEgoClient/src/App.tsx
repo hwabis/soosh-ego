@@ -1,11 +1,17 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 import GameLobby from './components/GameLobby';
+import PlayScreen from './components/PlayScreen';
 
 function App() {
   return (
-    <div>
-      <GameLobby />
-    </div>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<GameLobby />} />
+        <Route path="/play/:gameId" element={<PlayScreen />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;

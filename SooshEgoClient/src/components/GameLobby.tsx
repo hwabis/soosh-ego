@@ -1,14 +1,17 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const GameLobby = () => {
   const [playerName, setPlayerName] = useState('');
-  // todo entered game id
   const [createdGameId, setCreatedGameId] = useState('');
+  // todo entered game id
   const [errorMessage, setErrorMessage] = useState('');
+
+  const navigate = useNavigate();
 
   const handleCreateGame = async () => {
     try {
-      const response = await fetch('https://localhost:5001/api/gamelobby/create', { // todo local vs env links ???
+      const response = await fetch('https://localhost:5001/api/gamelobby/create', { // todo local, production, environment variables ???
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -25,8 +28,7 @@ const GameLobby = () => {
       const newGameId = await response.json();
       setCreatedGameId(newGameId);
       setErrorMessage('');
-      console.log(newGameId); //
-      // todo go to play screen using createdGameId, on play screen connect websocket and join
+      navigate(`/play/${newGameId}`);
     } catch (error) {
       setErrorMessage(String(error));
     }
