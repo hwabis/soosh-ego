@@ -30,6 +30,7 @@ namespace SooshEgoServer
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddSingleton<IGamesManager, GamesManager>();
+            builder.Services.AddSingleton<GameUpdateNotifier>();
 
             var app = builder.Build();
 

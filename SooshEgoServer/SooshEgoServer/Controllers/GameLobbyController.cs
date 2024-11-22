@@ -19,11 +19,6 @@ namespace SooshEgoServer.Controllers
                 return BadRequest(error);
             }
 
-            if (gameId == null)
-            {
-                throw new Exception();
-            }
-
             return Ok(gameId);
         }
 

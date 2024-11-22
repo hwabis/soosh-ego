@@ -8,10 +8,10 @@ namespace SooshEgoServer.Hubs
     {
         private readonly IGamesManager gamesManager;
 
-        public GameHub(IGamesManager gamesManager)
+        public GameHub(IGamesManager gamesManager, GameUpdateNotifier gameUpdateNotifier)
         {
             this.gamesManager = gamesManager;
-            this.gamesManager.GameStateUpdated += OnGameStateUpdated;
+            this.gamesManager.GameStateUpdated += gameUpdateNotifier.NotifyGameStateUpdated;
         }
 
         public override async Task OnConnectedAsync()
@@ -35,15 +35,6 @@ namespace SooshEgoServer.Hubs
             gamesManager.MarkPlayerDisconnectedAndCleanup(Context.ConnectionId);
 
             return base.OnDisconnectedAsync(exception);
-        }
-
-        private async void OnGameStateUpdated(object? sender, GameStateUpdatedEventArgs e)
-        {
-            IEnumerable<string> connectionIds = e.Game.Players
-                .Where(player => player.ConnectionId != null)
-                .Select(player => player.ConnectionId!);
-
-            await Clients.Clients(connectionIds).SendAsync("GameStateUpdated", e.Game); // todo client
         }
     }
 }

@@ -13,7 +13,7 @@ const GameLobby = () => {
   const handleCreateGame = async () => {
     try {
       const newGameId = await createGame(playerName);
-      navigate(`/play/${newGameId.value}?playerName=${encodeURIComponent(playerName)}`);
+      navigate(`/play?gameId=${encodeURIComponent(newGameId.value)}&playerName=${encodeURIComponent(playerName)}`);
     } catch (error) {
       setErrorMessage(String(error));
     }
@@ -22,7 +22,7 @@ const GameLobby = () => {
   const handleJoinGame = async () => {
     try {
       await addPlayer(enteredGameId, playerName);
-      navigate(`/play/${enteredGameId}?playerName=${encodeURIComponent(playerName)}`);
+      navigate(`/play?gameId=${encodeURIComponent(enteredGameId)}&playerName=${encodeURIComponent(playerName)}`);
     } catch (error) {
       setErrorMessage(String(error));
     }

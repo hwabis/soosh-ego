@@ -8,7 +8,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<GameLobby />} />
-        <Route path="/play/:gameId" element={<PlayScreen />} />
+        <Route path="/play" element={<PlayScreen />} />
       </Routes>
     </Router>
   );

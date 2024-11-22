@@ -27,8 +27,7 @@ namespace SooshEgoServer.GameManagement
                 {
                     if (!games.Remove(newId))
                     {
-                        logger.LogError("Couldn't remove non-existant game {GameId}", newId);
-                        throw new Exception();
+                        throw new Exception($"Couldn't remove non-existant game {newId}");
                     }
 
                     return (false, null, errorMessage);
@@ -60,8 +59,7 @@ namespace SooshEgoServer.GameManagement
                 {
                     if (matchingGame.Players.Count > gamePlayerLimit)
                     {
-                        logger.LogError("There were more than {GamePlayerLimit} players in {GameId}", gamePlayerLimit, gameId);
-                        throw new Exception();
+                        throw new Exception($"There were more than {gamePlayerLimit} players in {gameId}");
                     }
 
                     return (false, "The game's player limit is full.");
@@ -101,22 +99,19 @@ namespace SooshEgoServer.GameManagement
             {
                 if (!games.TryGetValue(gameId, out Game? matchingGame))
                 {
-                    logger.LogError("{PlayerName} tried to join {GameId}, but the game did not exist", playerName, gameId);
-                    throw new Exception();
+                    throw new Exception($"{playerName} tried to join {gameId}, but the game did not exist\"");
                 }
 
                 Player? player = matchingGame.Players.FirstOrDefault(player => player.Name == playerName);
 
                 if (player == null)
                 {
-                    logger.LogError("{PlayerName} tried to join {GameId}, but the player did not exist in the game", playerName, gameId);
-                    throw new Exception();
+                    throw new Exception($"{playerName} tried to join {gameId}, but the player did not exist in the game");
                 }
 
                 if (player.ConnectionId != null)
                 {
-                    logger.LogError("{PlayerName} tried to join {GameId}, but that player was already marked as connected", playerName, gameId);
-                    throw new Exception();
+                    throw new Exception($"{playerName} tried to join {gameId}, but that player was already marked as connected");
                 }
 
                 player.ConnectionId = connectionId;
