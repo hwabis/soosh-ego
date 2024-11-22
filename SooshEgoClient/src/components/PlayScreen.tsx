@@ -9,12 +9,16 @@ const PlayScreen = () => {
   const playerName = searchParams.get("playerName");
 
   const [gameState, setGameState] = useState<GameState>();
+
   const connectionRef = useRef<HubConnection | null>(null);
+  const hasBeganConnecting = useRef(false); // Prevents double connection in strict mode
 
   useEffect(() => {
-    if (!gameId || !playerName) {
+    if (!gameId || !playerName || hasBeganConnecting.current) {
       return;
     }
+
+    hasBeganConnecting.current = true;
 
     const connectAndSetConnection = async () => {
       const connection = await connectToGame(

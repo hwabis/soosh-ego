@@ -102,12 +102,8 @@ namespace SooshEgoServer.GameManagement
                     throw new Exception($"{playerName} tried to join {gameId}, but the game did not exist\"");
                 }
 
-                Player? player = matchingGame.Players.FirstOrDefault(player => player.Name == playerName);
-
-                if (player == null)
-                {
-                    throw new Exception($"{playerName} tried to join {gameId}, but the player did not exist in the game");
-                }
+                Player? player = matchingGame.Players.FirstOrDefault(player => player.Name == playerName)
+                    ?? throw new Exception($"{playerName} tried to join {gameId}, but the player did not exist in the game");
 
                 if (player.ConnectionId != null)
                 {
