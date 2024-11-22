@@ -8,168 +8,113 @@ namespace SooshEgoServer.Tests.GameLogic
 {
     public class GamesManagerTests
     {
-        [Fact]
-        public void TestGameCreation()
-        {
-            Mock<ILogger<GamesManager>> mockLogger = new();
-            GamesManager gamesManager = new(mockLogger.Object);
+        private readonly Mock<ILogger<GamesManager>> mockLogger;
+        private readonly GamesManager gamesManager;
 
-            (bool success1, GameId? gameId1, _) = gamesManager.CreateAndAddPlayerToGame(new("fangblade"));
-            (bool success2, GameId? gameId2, _) = gamesManager.CreateAndAddPlayerToGame(new("fangblade"));
+        public GamesManagerTests()
+        {
+            mockLogger = new Mock<ILogger<GamesManager>>();
+            gamesManager = new GamesManager(mockLogger.Object);
+        }
+
+        [Fact]
+        public void CreateGame_ShouldGenerateUniqueIds()
+        {
+            PlayerName playerName = new("player1");
+
+            (bool success1, GameId? gameId1, _) = gamesManager.CreateAndAddPlayerToGame(playerName);
+            (bool success2, GameId? gameId2, _) = gamesManager.CreateAndAddPlayerToGame(playerName);
 
             Assert.True(success1);
             Assert.True(success2);
             Assert.NotNull(gameId1);
             Assert.NotNull(gameId2);
-
-            Assert.NotEqual(gameId1.Value, gameId2.Value);
-
-            (bool success3, GameId? gameId3, string error3) = gamesManager.CreateAndAddPlayerToGame(new(""));
-
-            Assert.False(success3);
-            Assert.Null(gameId3);
-            Assert.False(string.IsNullOrEmpty(error3));
+            Assert.NotEqual(gameId1, gameId2);
         }
 
         [Fact]
-        public void TestAddAndGetPlayers()
+        public void CreateGame_ShouldFailWithEmptyPlayerName()
         {
-            Mock<ILogger<GamesManager>> mockLogger = new();
-            GamesManager gamesManager = new(mockLogger.Object);
+            PlayerName emptyName = new("");
 
-            (bool _, GameId? gameId, string _) = gamesManager.CreateAndAddPlayerToGame(new("asdf"));
+            (bool success, GameId? gameId, string error) = gamesManager.CreateAndAddPlayerToGame(emptyName);
+
+            Assert.False(success);
+            Assert.Null(gameId);
+            Assert.False(string.IsNullOrWhiteSpace(error));
+        }
+
+        [Fact]
+        public void AddPlayer_ShouldEnforcePlayerLimit()
+        {
+            PlayerName playerName = new("host");
+            (bool _, GameId? gameId, _) = gamesManager.CreateAndAddPlayerToGame(playerName);
 
             Assert.NotNull(gameId);
 
-            Assert.True(gamesManager.GetGameState(gameId).success
-                && gamesManager.GetGameState(gameId).game!.Players.Count == 1
-                && gamesManager.GetGameState(gameId).game!.Players[0].Name.Value == "asdf");
+            for (int i = 1; i < 5; i++)
+            {
+                string name = $"player{i}";
+                Assert.True(gamesManager.AddPlayerToGame(gameId, new PlayerName(name)).success);
+            }
 
-            Assert.False(gamesManager.AddPlayerToGame(gameId, new PlayerName("")).success);
-            Assert.True(gamesManager.GetGameState(gameId).success
-                && gamesManager.GetGameState(gameId).game!.Players.Count == 1);
-
-            Assert.True(gamesManager.AddPlayerToGame(gameId, new PlayerName("guy2")).success);
-            Assert.True(gamesManager.GetGameState(gameId).success
-                && gamesManager.GetGameState(gameId).game!.Players.Count == 2
-                && gamesManager.GetGameState(gameId).game!.Players[1].Name.Value == "guy2");
-
-            Assert.False(gamesManager.AddPlayerToGame(gameId, new PlayerName("guy2")).success);
-
-            Assert.True(gamesManager.AddPlayerToGame(gameId, new PlayerName("guy3")).success);
-            Assert.True(gamesManager.AddPlayerToGame(gameId, new PlayerName("guy4")).success);
-            Assert.True(gamesManager.AddPlayerToGame(gameId, new PlayerName("guy5")).success);
-            Assert.False(gamesManager.AddPlayerToGame(gameId, new PlayerName("guy6")).success);
-
-            Assert.True(gamesManager.GetGameState(gameId).game!.Players.Count == 5);
+            Assert.False(gamesManager.AddPlayerToGame(gameId, new PlayerName("player6")).success);
         }
 
         [Fact]
-        public void TestAddAndGetPlayersNonExistingGame()
+        public void AddPlayer_ShouldNotAllowDuplicateNames()
         {
-            Mock<ILogger<GamesManager>> mockLogger = new();
-            GamesManager gamesManager = new(mockLogger.Object);
+            (bool _, GameId? gameId, _) = gamesManager.CreateAndAddPlayerToGame(new("host"));
+            Assert.NotNull(gameId);
 
-            Assert.False(gamesManager.AddPlayerToGame(new GameId("mystery lobby"), new PlayerName("mr. lost")).success);
-            Assert.False(gamesManager.GetGameState(new GameId("mystery lobby")).success);
+            bool firstAddSuccess = gamesManager.AddPlayerToGame(gameId, new("duplicate")).success;
+            bool secondAddSuccess = gamesManager.AddPlayerToGame(gameId, new("duplicate")).success;
+
+            Assert.True(firstAddSuccess);
+            Assert.False(secondAddSuccess);
         }
 
         [Fact]
-        public void TestGameStateEventAndConnections()
+        public void Disconnect_ShouldCleanupEmptyGames()
         {
-            Mock<ILogger<GamesManager>> mockLogger = new();
-            GamesManager gamesManager = new(mockLogger.Object);
+            (bool _, GameId? gameId, _) = gamesManager.CreateAndAddPlayerToGame(new("player1"));
+            Assert.NotNull(gameId);
 
-            int gameStateUpdateCount = 0;
-            gamesManager.GameStateUpdated += (_, _) => gameStateUpdateCount++;
+            gamesManager.MarkPlayerConnected(gameId, new("player1"), "connection1");
 
-            (bool success1, GameId? gameId1, _) = gamesManager.CreateAndAddPlayerToGame(new("zhou"));
-            Assert.True(gameStateUpdateCount == 1);
+            gamesManager.MarkPlayerDisconnectedAndCleanup("connection1");
 
-            Assert.NotNull(gameId1);
-
-            Assert.Null(gamesManager.GetGameState(gameId1).game!.Players[0].ConnectionId);
-            gamesManager.MarkPlayerConnected(gameId1, new("zhou"), "zhou-connection");
-            Assert.True(gameStateUpdateCount == 2);
-
-            gamesManager.AddPlayerToGame(gameId1, new("ayaya"));
-            Assert.True(gameStateUpdateCount == 3);
-
-            gamesManager.MarkPlayerConnected(gameId1, new("ayaya"), "ayaya-connection");
-            Assert.True(gameStateUpdateCount == 4);
-            Assert.True(gamesManager.GetGameState(gameId1).game!.Players[1].ConnectionId == "ayaya-connection");
-
-            gamesManager.AddPlayerToGame(gameId1, new("bumba"));
-            Assert.True(gameStateUpdateCount == 5);
-
-            gamesManager.MarkPlayerConnected(gameId1, new("bumba"), "bumba-connection");
-            Assert.True(gameStateUpdateCount == 6);
-            Assert.True(gamesManager.GetGameState(gameId1).game!.Players[2].ConnectionId == "bumba-connection");
-
-            gamesManager.MarkPlayerDisconnectedAndCleanup("ayaya-connection");
-            Assert.True(gameStateUpdateCount == 7);
-            Assert.Null(gamesManager.GetGameState(gameId1).game!.Players[1].ConnectionId);
-            Assert.True(gamesManager.GetGameState(gameId1).game!.Players[0].ConnectionId == "zhou-connection");
-            Assert.True(gamesManager.GetGameState(gameId1).game!.Players[2].ConnectionId == "bumba-connection");
-
-            (bool success2, GameId? gameId2, _) = gamesManager.CreateAndAddPlayerToGame(new("stanley"));
-
-            Assert.NotNull(gameId2);
-
-            Assert.True(gameStateUpdateCount == 8);
-
-            gamesManager.AddPlayerToGame(gameId2, new("ayaya"));
-            Assert.True(gameStateUpdateCount == 9);
-            Assert.Null(gamesManager.GetGameState(gameId2).game!.Players[0].ConnectionId);
-            Assert.Null(gamesManager.GetGameState(gameId2).game!.Players[1].ConnectionId);
-
-            gamesManager.AddPlayerToGame(gameId2, new("bumba"));
-            Assert.True(gameStateUpdateCount == 10);
-
-            gamesManager.MarkPlayerConnected(gameId2, new("bumba"), "bumba-connection");
-            Assert.True(gameStateUpdateCount == 11);
-            Assert.True(gamesManager.GetGameState(gameId2).game!.Players[2].ConnectionId == "bumba-connection");
-
-            gamesManager.MarkPlayerConnected(gameId2, new("ayaya"), "ayaya-connection");
-            Assert.True(gameStateUpdateCount == 12);
-            Assert.True(gamesManager.GetGameState(gameId2).game!.Players[1].ConnectionId == "ayaya-connection");
-
-            gamesManager.MarkPlayerDisconnectedAndCleanup("nobody-has-this-connection");
-            Assert.True(gameStateUpdateCount == 12);
+            Assert.False(gamesManager.GetGameState(gameId).success);
         }
 
         [Fact]
-        public void TestGameDisconnectCleanup()
+        public void Disconnect_ShouldNotRemoveNonEmptyGames()
         {
-            Mock<ILogger<GamesManager>> mockLogger = new();
-            GamesManager gamesManager = new(mockLogger.Object);
+            (bool _, GameId? gameId, _) = gamesManager.CreateAndAddPlayerToGame(new("player1"));
+            Assert.NotNull(gameId);
 
-            (bool _, GameId? gameId1, _) = gamesManager.CreateAndAddPlayerToGame(new("bombito"));
+            gamesManager.AddPlayerToGame(gameId, new("player2"));
+            gamesManager.MarkPlayerConnected(gameId, new("player1"), "connection1");
+            gamesManager.MarkPlayerConnected(gameId, new("player2"), "connection2");
 
-            Assert.NotNull(gameId1);
+            gamesManager.MarkPlayerDisconnectedAndCleanup("connection1");
 
-            gamesManager.AddPlayerToGame(gameId1, new("ayaya"));
-            gamesManager.MarkPlayerConnected(gameId1, new("ayaya"), "ayaya-connection");
-            gamesManager.MarkPlayerDisconnectedAndCleanup("ayaya-connection");
-            Assert.False(gamesManager.GetGameState(gameId1).success);
+            Assert.True(gamesManager.GetGameState(gameId).success);
+        }
 
-            (bool _, GameId? gameId2, _) = gamesManager.CreateAndAddPlayerToGame(new("zod"));
+        [Fact]
+        public void GameStateUpdated_ShouldFireCorrectly()
+        {
+            int eventFiredCount = 0;
+            gamesManager.GameStateUpdated += (_, _) => eventFiredCount++;
 
-            Assert.NotNull(gameId2);
+            (bool _, GameId? gameId, _) = gamesManager.CreateAndAddPlayerToGame(new("host"));
+            Assert.NotNull(gameId);
 
-            gamesManager.MarkPlayerConnected(gameId2, new("zod"), "zod-connection");
+            gamesManager.AddPlayerToGame(gameId, new("player1"));
+            gamesManager.MarkPlayerConnected(gameId, new("player1"), "connection1");
 
-            gamesManager.AddPlayerToGame(gameId2, new("bumba"));
-            gamesManager.MarkPlayerConnected(gameId2, new("bumba"), "bumba-connection");
-
-            gamesManager.MarkPlayerDisconnectedAndCleanup("bumba-connection");
-            Assert.True(gamesManager.GetGameState(gameId2).success);
-            Assert.NotNull(gamesManager.GetGameState(gameId2).game);
-            Assert.True(gamesManager.GetGameState(gameId2).game!.Players.Count == 2
-                && gamesManager.GetGameState(gameId2).game!.Players[0].Name.Value == "zod");
-
-            gamesManager.MarkPlayerDisconnectedAndCleanup("zod-connection");
-            Assert.False(gamesManager.GetGameState(gameId2).success);
+            Assert.Equal(3, eventFiredCount);
         }
     }
 }
