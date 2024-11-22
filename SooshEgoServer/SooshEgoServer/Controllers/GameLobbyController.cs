@@ -27,7 +27,7 @@ namespace SooshEgoServer.Controllers
             return Ok(gameId);
         }
 
-        [HttpPost("join")]
+        [HttpPost("add-player")]
         public IActionResult AddPlayerToGame([FromBody] JoinGameRequest request)
         {
             (bool success, string error) = gamesManager.AddPlayerToGame(request.GameId, request.PlayerName);
