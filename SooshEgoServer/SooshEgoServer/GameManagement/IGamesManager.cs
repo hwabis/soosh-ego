@@ -1,6 +1,6 @@
-﻿using SooshEgoServer.GameLogic.Models;
+﻿using SooshEgoServer.GameManagement.Models;
 
-namespace SooshEgoServer.GameLogic
+namespace SooshEgoServer.GameManagement
 {
     public interface IGamesManager
     {

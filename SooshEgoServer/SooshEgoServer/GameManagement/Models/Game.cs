@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace SooshEgoServer.GameLogic.Models
+namespace SooshEgoServer.GameManagement.Models
 {
     public class Game(GameId gameId)
     {

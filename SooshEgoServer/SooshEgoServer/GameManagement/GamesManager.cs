@@ -1,7 +1,7 @@
-﻿using SooshEgoServer.GameLogic.Models;
+﻿using SooshEgoServer.GameManagement.Models;
 using System.Text;
 
-namespace SooshEgoServer.GameLogic
+namespace SooshEgoServer.GameManagement
 {
     public class GamesManager(ILogger<GamesManager> logger) : IGamesManager
     {

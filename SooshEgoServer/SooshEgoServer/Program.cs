@@ -1,5 +1,5 @@
 
-using SooshEgoServer.GameLogic;
+using SooshEgoServer.GameManagement;
 using SooshEgoServer.Hubs;
 
 namespace SooshEgoServer

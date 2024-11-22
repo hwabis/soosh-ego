@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using SooshEgoServer.GameLogic;
-using SooshEgoServer.GameLogic.Models;
+using SooshEgoServer.GameManagement;
+using SooshEgoServer.GameManagement.Models;
 
 namespace SooshEgoServer.Hubs
 {

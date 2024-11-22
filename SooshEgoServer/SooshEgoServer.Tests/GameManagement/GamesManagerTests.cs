@@ -1,10 +1,10 @@
 using Microsoft.Extensions.Logging;
 using Moq;
-using SooshEgoServer.GameLogic;
-using SooshEgoServer.GameLogic.Models;
+using SooshEgoServer.GameManagement;
+using SooshEgoServer.GameManagement.Models;
 using Xunit;
 
-namespace SooshEgoServer.Tests.GameLogic
+namespace SooshEgoServer.Tests.GameManagement
 {
     public class GamesManagerTests
     {
