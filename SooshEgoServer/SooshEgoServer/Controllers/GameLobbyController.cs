@@ -10,15 +10,12 @@ namespace SooshEgoServer.Controllers
     public class GameLobbyController(IGamesManager gamesManager) : ControllerBase
     {
         [HttpPost("create")]
-        public IActionResult CreateAndJoinGame([FromBody] PlayerName playerName)
+        public IActionResult CreateAndAddPlayerToGame([FromBody] PlayerName playerName)
         {
-            GameId gameId = gamesManager.CreateGame();
-
-            (bool success, string error) = gamesManager.AddPlayerToGame(gameId, playerName);
+            (bool success, GameId? gameId, string error) = gamesManager.CreateAndAddPlayerToGame(playerName);
 
             if (!success)
             {
-                gamesManager.DeleteGame(gameId);
                 return BadRequest(error);
             }
 
@@ -26,7 +23,7 @@ namespace SooshEgoServer.Controllers
         }
 
         [HttpPost("join")]
-        public IActionResult JoinExistingGame([FromBody] JoinGameRequest request)
+        public IActionResult AddPlayerToGame([FromBody] JoinGameRequest request)
         {
             (bool success, string error) = gamesManager.AddPlayerToGame(request.GameId, request.PlayerName);
 

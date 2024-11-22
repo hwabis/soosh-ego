@@ -13,25 +13,32 @@ namespace SooshEgoServer.GameLogic
 
         public event EventHandler<GameStateUpdatedEventArgs>? GameStateUpdated;
 
-        public GameId CreateGame()
+        public (bool success, GameId? gameId, string error) CreateAndAddPlayerToGame(PlayerName playerName)
         {
             lock (gamesLock)
             {
                 GameId newId = CreateNewGameId();
                 Game newGame = new(newId);
-
                 games.Add(newId, newGame);
-                logger.LogInformation("Created {GameId}", newId);
 
-                return newId;
-            }
-        }
+                (bool success, string errorMessage) = AddPlayerToGame(newId, playerName);
 
-        public void DeleteGame(GameId gameId)
-        {
-            lock (gamesLock)
-            {
-                games.Remove(gameId);
+                if (!success)
+                {
+                    if (!games.Remove(newId))
+                    {
+                        logger.LogError("Couldn't remove non-existant game {GameId}", newId);
+                        throw new Exception();
+                    }
+
+                    return (false, null, errorMessage);
+                }
+                else
+                {
+                    logger.LogInformation("Created {GameId}", newId);
+
+                    return (true, newId, "");
+                }
             }
         }
 
