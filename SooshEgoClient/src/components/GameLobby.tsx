@@ -13,7 +13,7 @@ const GameLobby = () => {
   const handleCreateGame = async () => {
     try {
       const newGameId = await createGame(playerName);
-      navigate(`/play/${newGameId.value}`); // todo also pass in player name
+      navigate(`/play/${newGameId.value}?playerName=${encodeURIComponent(playerName)}`);
     } catch (error) {
       setErrorMessage(String(error));
     }

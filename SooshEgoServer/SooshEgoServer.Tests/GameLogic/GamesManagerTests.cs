@@ -116,5 +116,7 @@ namespace SooshEgoServer.Tests.GameLogic
 
             Assert.Equal(3, eventFiredCount);
         }
+
+        // todo need a test for deleting rooms that have 1 person who's added but never connected
     }
 }

@@ -7,7 +7,7 @@ namespace SooshEgoServer.Tests.GameLogic
     public class GameModelsTests
     {
         [Fact]
-        public void TestModelsSerializable()
+        public void Models_Serializable()
         {
             Game game = new(new("bomba"))
             {
