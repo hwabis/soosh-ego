@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { createGame } from '../services/ApiService';
+
 const GameLobby = () => {
   const [playerName, setPlayerName] = useState('');
-  const [createdGameId, setCreatedGameId] = useState('');
   // todo entered game id
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -11,24 +12,8 @@ const GameLobby = () => {
 
   const handleCreateGame = async () => {
     try {
-      const response = await fetch('https://localhost:5001/api/gamelobby/create', { // todo local, production, environment variables ???
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ Value: playerName })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.text();
-        setErrorMessage(errorData);
-        return;
-      }
-
-      const newGameId = await response.json();
-      setCreatedGameId(newGameId);
-      setErrorMessage('');
-      navigate(`/play/${newGameId}`);
+      const newGameId = await createGame(playerName);
+      navigate(`/play/${newGameId.value}`); // todo also pass in player name
     } catch (error) {
       setErrorMessage(String(error));
     }
