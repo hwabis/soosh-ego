@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using SooshEgoServer.GameManagement;
-using SooshEgoServer.GameManagement.Models;
 
 namespace SooshEgoServer.Hubs
 {
@@ -15,9 +14,20 @@ namespace SooshEgoServer.Hubs
             this.gamesManager.GameStateUpdated += OnGameStateUpdated;
         }
 
-        public void ConnectToGame(GameId gameId, PlayerName playerName)
+        public override async Task OnConnectedAsync()
         {
-            gamesManager.MarkPlayerConnected(gameId, playerName, Context.ConnectionId);
+            string? gameId = Context.GetHttpContext()?.Request.Query["gameId"];
+            string? playerName = Context.GetHttpContext()?.Request.Query["playerName"];
+
+            if (string.IsNullOrEmpty(gameId) || string.IsNullOrEmpty(playerName))
+            {
+                await Clients.Caller.SendAsync("Error", "Missing gameId or playerName");
+                return;
+            }
+
+            gamesManager.MarkPlayerConnected(new(gameId), new(playerName), Context.ConnectionId);
+
+            await base.OnConnectedAsync();
         }
 
         public override Task OnDisconnectedAsync(Exception? exception)

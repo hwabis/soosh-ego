@@ -43,7 +43,7 @@ namespace SooshEgoServer
             app.UseHttpsRedirection();
 
             app.MapControllers();
-            app.MapHub<GameHub>($"/{nameof(GameHub)}");
+            app.MapHub<GameHub>($"/game-hub");
 
             app.Run();
         }
