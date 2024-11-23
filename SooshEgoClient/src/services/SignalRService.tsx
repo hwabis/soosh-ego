@@ -32,12 +32,9 @@ export const connectToGame = async (
       console.log("SignalR disconnected");
    });
 
-   try {
-      await connection.start();
-      console.log("SignalR connected");
-   } catch (error) {
-      console.error("SignalR connection error: ", error);
-   }
+   console.log("SignalR connecting");
+   await connection.start();
+   console.log("SignalR connected");
 
    return connection;
 };

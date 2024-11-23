@@ -31,12 +31,16 @@ const PlayScreen = () => {
 
       isConnectingRef.current = true;
 
-      connectionRef.current = await connectToGame(
-        gameId,
-        playerName,
-        updatedGameState => setGameState(updatedGameState),
-        error => console.error("haha im logging the error again ", error) // todo
-      );
+      try {
+        connectionRef.current = await connectToGame(
+          gameId,
+          playerName,
+          updatedGameState => setGameState(updatedGameState),
+          error => console.error("haha im logging the error again ", error) // todo set text or something
+        );
+      } catch (error) {
+        console.error(error); // todo set text or something
+      }
 
       isConnectingRef.current = false;
     };
