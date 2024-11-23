@@ -25,16 +25,26 @@ namespace SooshEgoServer.Hubs
                 return;
             }
 
-            gamesManager.MarkPlayerConnected(new(gameId), new(playerName), Context.ConnectionId);
+            (bool success, string error) = gamesManager.MarkPlayerConnected(new(gameId), new(playerName), Context.ConnectionId);
+
+            if (!success)
+            {
+                await SendError(error);
+            }
 
             await base.OnConnectedAsync();
         }
 
-        public override Task OnDisconnectedAsync(Exception? exception)
+        public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            gamesManager.MarkPlayerDisconnectedAndCleanup(Context.ConnectionId);
+            (bool success, string error) = gamesManager.MarkPlayerDisconnectedAndCleanup(Context.ConnectionId);
 
-            return base.OnDisconnectedAsync(exception);
+            if (!success)
+            {
+                await SendError(error);
+            }
+
+            await base.OnDisconnectedAsync(exception);
         }
 
         private async Task SendError(string message)

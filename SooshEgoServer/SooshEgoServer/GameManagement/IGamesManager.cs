@@ -16,8 +16,8 @@ namespace SooshEgoServer.GameManagement
 
         public (bool success, Game? game) GetGameState(GameId gameId);
 
-        public void MarkPlayerConnected(GameId gameId, PlayerName playerName, string connectionId);
-        public void MarkPlayerDisconnectedAndCleanup(string playerConnectionId);
+        public (bool success, string error) MarkPlayerConnected(GameId gameId, PlayerName playerName, string connectionId);
+        public (bool success, string error) MarkPlayerDisconnectedAndCleanup(string playerConnectionId);
 
         #endregion
 

@@ -34,7 +34,8 @@ const PlayScreen = () => {
       connectionRef.current = await connectToGame(
         gameId,
         playerName,
-        updatedGameState => setGameState(updatedGameState)
+        updatedGameState => setGameState(updatedGameState),
+        error => console.error("haha im logging the error again ", error) // todo
       );
 
       isConnectingRef.current = false;

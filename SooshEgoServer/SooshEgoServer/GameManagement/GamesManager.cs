@@ -62,12 +62,12 @@ namespace SooshEgoServer.GameManagement
                         throw new Exception($"There were more than {gamePlayerLimit} players in {gameId}");
                     }
 
-                    return (false, "The game's player count is full.");
+                    return (false, "The game's lobby is full.");
                 }
 
                 if (matchingGame.Players.Any(player => player.Name == playerName))
                 {
-                    return (false, "That name is already taken.");
+                    return (false, "The name is already taken.");
                 }
 
                 matchingGame.Players.Add(new Player(playerName));
@@ -85,7 +85,7 @@ namespace SooshEgoServer.GameManagement
             {
                 if (!games.TryGetValue(gameId, out Game? matchingGame))
                 {
-                    logger.LogWarning("Tried to get non-existent game {GameId}", gameId);
+                    logger.LogWarning("Attempted to get non-existent game {GameId}", gameId);
                     return (false, null);
                 }
 
@@ -93,14 +93,14 @@ namespace SooshEgoServer.GameManagement
             }
         }
 
-        public void MarkPlayerConnected(GameId gameId, PlayerName playerName, string connectionId)
+        public (bool success, string error) MarkPlayerConnected(GameId gameId, PlayerName playerName, string connectionId)
         {
             lock (gamesLock)
             {
                 if (!games.TryGetValue(gameId, out Game? matchingGame))
                 {
                     logger.LogWarning("{PlayerName} tried to connect to {GameId}, but the game did not exist", playerName, gameId);
-                    return;
+                    return (false, "There is no game with the specified game ID.");
                 }
 
                 Player? player = matchingGame.Players.FirstOrDefault(player => player.Name == playerName);
@@ -108,23 +108,24 @@ namespace SooshEgoServer.GameManagement
                 if (player == null)
                 {
                     logger.LogWarning("{PlayerName} tried to connect to {GameId}, but the player did not exist in the game", playerName, gameId);
-                    return;
+                    return (false, "There is no player with that name.");
                 }
 
                 if (player.ConnectionId != null)
                 {
                     logger.LogWarning("{PlayerName} tried to connect to {GameId}, but that player was already marked as connected", playerName, gameId);
-                    return;
+                    return (false, "A player with that name is already connected.");
                 }
 
                 player.ConnectionId = connectionId;
                 logger.LogInformation("{PlayerName} connected to {GameId}", playerName, gameId);
 
                 GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));
+                return (true, "");
             }
         }
 
-        public void MarkPlayerDisconnectedAndCleanup(string connectionId)
+        public (bool success, string error) MarkPlayerDisconnectedAndCleanup(string connectionId)
         {
             lock (gamesLock)
             {
@@ -134,7 +135,7 @@ namespace SooshEgoServer.GameManagement
                 if (matchingGame == null)
                 {
                     logger.LogWarning("Disconnect received for connection {ConnectionId} which was not in a game", connectionId);
-                    return;
+                    return (false, "Cannot disconnect while not in a game.");
                 }
 
                 Player? matchingPlayer = matchingGame.Players
@@ -143,7 +144,7 @@ namespace SooshEgoServer.GameManagement
                 if (matchingPlayer == null)
                 {
                     logger.LogWarning("Disconnect received for unknown connection {ConnectionId}", connectionId);
-                    return;
+                    return (false, "Cannot disconnect while not in a game.");
                 }
 
                 matchingPlayer.ConnectionId = null;
@@ -156,6 +157,7 @@ namespace SooshEgoServer.GameManagement
                 }
 
                 GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));
+                return (true, "");
             }
         }
 
