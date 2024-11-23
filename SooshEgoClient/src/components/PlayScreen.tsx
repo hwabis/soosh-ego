@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router-dom";
-import { connectToGame, GameState } from "../services/WebSocketService";
+import { connectToGame, GameState } from "../services/SignalRService";
 import { useEffect, useRef, useState } from "react";
 import { HubConnection } from "@microsoft/signalr";
 
@@ -9,16 +9,19 @@ const PlayScreen = () => {
   const playerName = searchParams.get("playerName");
 
   const [gameState, setGameState] = useState<GameState>();
-
   const connectionRef = useRef<HubConnection | null>(null);
-  const hasBeganConnecting = useRef(false); // Prevents attempting to connect twice in strict mode
+
+  const cleanupConnection = async () => {
+    if (connectionRef.current) {
+      await connectionRef.current.stop();
+      connectionRef.current = null;
+    }
+  };
 
   useEffect(() => {
-    if (!gameId || !playerName || hasBeganConnecting.current) {
+    if (!gameId || !playerName) {
       return;
     }
-
-    hasBeganConnecting.current = true;
 
     const connectAndSetConnection = async () => {
       const connection = await connectToGame(
@@ -30,13 +33,12 @@ const PlayScreen = () => {
       connectionRef.current = connection;
     };
 
-    connectAndSetConnection();
+    cleanupConnection().then(() => {
+      connectAndSetConnection();
+    });
 
     return () => {
-      if (connectionRef.current) {
-        connectionRef.current.stop();
-        connectionRef.current = null;
-      }
+      cleanupConnection();
     };
   }, [gameId, playerName]);
 

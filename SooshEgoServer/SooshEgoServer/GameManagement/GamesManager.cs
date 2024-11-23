@@ -41,7 +41,7 @@ namespace SooshEgoServer.GameManagement
             }
         }
 
-        public (bool success, string errorMessage) AddPlayerToGame(GameId gameId, PlayerName playerName)
+        public (bool success, string error) AddPlayerToGame(GameId gameId, PlayerName playerName)
         {
             if (playerName.Value == string.Empty)
             {
@@ -62,7 +62,7 @@ namespace SooshEgoServer.GameManagement
                         throw new Exception($"There were more than {gamePlayerLimit} players in {gameId}");
                     }
 
-                    return (false, "The game's player limit is full.");
+                    return (false, "The game's player count is full.");
                 }
 
                 if (matchingGame.Players.Any(player => player.Name == playerName))
@@ -99,15 +99,22 @@ namespace SooshEgoServer.GameManagement
             {
                 if (!games.TryGetValue(gameId, out Game? matchingGame))
                 {
-                    throw new Exception($"{playerName} tried to join {gameId}, but the game did not exist\"");
+                    logger.LogWarning("{PlayerName} tried to connect to {GameId}, but the game did not exist", playerName, gameId);
+                    return;
                 }
 
-                Player? player = matchingGame.Players.FirstOrDefault(player => player.Name == playerName)
-                    ?? throw new Exception($"{playerName} tried to join {gameId}, but the player did not exist in the game");
+                Player? player = matchingGame.Players.FirstOrDefault(player => player.Name == playerName);
+
+                if (player == null)
+                {
+                    logger.LogWarning("{PlayerName} tried to connect to {GameId}, but the player did not exist in the game", playerName, gameId);
+                    return;
+                }
 
                 if (player.ConnectionId != null)
                 {
-                    throw new Exception($"{playerName} tried to join {gameId}, but that player was already marked as connected");
+                    logger.LogWarning("{PlayerName} tried to connect to {GameId}, but that player was already marked as connected", playerName, gameId);
+                    return;
                 }
 
                 player.ConnectionId = connectionId;

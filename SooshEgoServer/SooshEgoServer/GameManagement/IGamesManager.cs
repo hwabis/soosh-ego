@@ -12,17 +12,11 @@ namespace SooshEgoServer.GameManagement
         #region In-lobby
 
         public (bool success, GameId? gameId, string error) CreateAndAddPlayerToGame(PlayerName playerName);
-        public (bool success, string errorMessage) AddPlayerToGame(GameId gameId, PlayerName playerName);
+        public (bool success, string error) AddPlayerToGame(GameId gameId, PlayerName playerName);
 
         public (bool success, Game? game) GetGameState(GameId gameId);
 
-        /// <summary>
-        /// Throws if gameId or playerName do not exist.
-        /// </summary>
         public void MarkPlayerConnected(GameId gameId, PlayerName playerName, string connectionId);
-        /// <summary>
-        /// Throws if playerConnectionId does not exist.
-        /// </summary>
         public void MarkPlayerDisconnectedAndCleanup(string playerConnectionId);
 
         #endregion

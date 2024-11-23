@@ -21,7 +21,7 @@ namespace SooshEgoServer.Hubs
 
             if (string.IsNullOrEmpty(gameId) || string.IsNullOrEmpty(playerName))
             {
-                await Clients.Caller.SendAsync("Error", "Missing gameId or playerName");
+                await SendError("Missing game ID or player name");
                 return;
             }
 
@@ -35,6 +35,11 @@ namespace SooshEgoServer.Hubs
             gamesManager.MarkPlayerDisconnectedAndCleanup(Context.ConnectionId);
 
             return base.OnDisconnectedAsync(exception);
+        }
+
+        private async Task SendError(string message)
+        {
+            await Clients.Caller.SendAsync("Error", message);
         }
     }
 }
