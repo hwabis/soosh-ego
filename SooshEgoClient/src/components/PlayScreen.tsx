@@ -11,7 +11,7 @@ const PlayScreen = () => {
   const [gameState, setGameState] = useState<GameState>();
 
   const connectionRef = useRef<HubConnection | null>(null);
-  const hasBeganConnecting = useRef(false); // Prevents double connection in strict mode
+  const hasBeganConnecting = useRef(false); // Prevents attempting to connect twice in strict mode
 
   useEffect(() => {
     if (!gameId || !playerName || hasBeganConnecting.current) {
@@ -24,8 +24,7 @@ const PlayScreen = () => {
       const connection = await connectToGame(
         gameId,
         playerName,
-        updatedGameState => setGameState(updatedGameState),
-        error => console.error(error)
+        updatedGameState => setGameState(updatedGameState)
       );
 
       connectionRef.current = connection;

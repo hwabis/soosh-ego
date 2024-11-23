@@ -7,8 +7,7 @@ export interface GameState {
 export const connectToGame = async (
    gameId: string,
    playerName: string,
-   onGameStateUpdated: (gameState: GameState) => void,
-   onError: (error: string) => void): Promise<HubConnection> => {
+   onGameStateUpdated: (gameState: GameState) => void): Promise<HubConnection> => {
    const connection = new HubConnectionBuilder()
       .withUrl(`${import.meta.env.VITE_SOOSH_EGO_API_URL}/game-hub?gameId=${gameId}&playerName=${playerName}`)
       .build();
@@ -17,9 +16,7 @@ export const connectToGame = async (
       onGameStateUpdated(gameState);
    });
 
-   connection.on("Error", (error: string) => {
-      onError(error);
-   });
+   connection.on("Error", (error: string) => console.error(error));
 
    connection.onclose(error => {
       console.log("SignalR disconnected: ", error);
