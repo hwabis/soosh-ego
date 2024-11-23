@@ -10,27 +10,34 @@ const PlayScreen = () => {
 
   const [gameState, setGameState] = useState<GameState>();
   const connectionRef = useRef<HubConnection | null>(null);
-
-  const cleanupConnection = async () => {
-    if (connectionRef.current) {
-      await connectionRef.current.stop();
-      connectionRef.current = null;
-    }
-  };
+  const isConnectingRef = useRef(false);
 
   useEffect(() => {
     if (!gameId || !playerName) {
       return;
     }
 
+    const cleanupConnection = async () => {
+      if (connectionRef.current) {
+        await connectionRef.current.stop();
+        connectionRef.current = null;
+      }
+    };
+
     const connectAndSetConnection = async () => {
-      const connection = await connectToGame(
+      if (isConnectingRef.current) {
+        return;
+      }
+
+      isConnectingRef.current = true;
+
+      connectionRef.current = await connectToGame(
         gameId,
         playerName,
         updatedGameState => setGameState(updatedGameState)
       );
 
-      connectionRef.current = connection;
+      isConnectingRef.current = false;
     };
 
     cleanupConnection().then(() => {

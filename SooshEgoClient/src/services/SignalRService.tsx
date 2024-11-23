@@ -16,15 +16,23 @@ export const connectToGame = async (
       onGameStateUpdated(gameState);
    });
 
-   connection.on("Error", (error: string) => console.error(error));
+   connection.on("Error", (error: string) => console.error("SignalR error: ", error));
 
    connection.onclose(error => {
-      console.log("SignalR disconnected: ", error);
+      if (error) {
+         console.error("SignalR disconnected with error: ", error);
+         return;
+      }
+
+      console.log("SignalR disconnected");
    });
 
-   await connection.start()
-      .then(() => console.log("SignalR connection established"))
-      .catch((error) => console.error("SignalR connection error:", error));
+   try {
+      await connection.start();
+      console.log("SignalR connected");
+   } catch (error) {
+      console.error("SignalR connection error: ", error);
+   }
 
    return connection;
 };
