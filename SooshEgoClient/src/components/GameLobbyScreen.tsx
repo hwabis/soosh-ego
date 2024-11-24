@@ -27,7 +27,7 @@ const GameLobbyScreen = () => {
   return (
     <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
       <div className="p-6 bg-red-900 rounded space-y-4">
-        <label className="text-lg font-bold text-white">Sushi Go!</label>
+        <p className="text-lg font-bold text-white">Sushi Go!</p>
         <div className="space-y-2">
           <label className="block font-medium text-white">Your name:</label>
           <input
@@ -59,7 +59,7 @@ const GameLobbyScreen = () => {
           </button>
         </div>
       </div>
-      <div className="block font-medium text-red-900 h-6 m-4">{errorMessage}</div>
+      <p className="block font-medium text-red-900 h-6 m-4">{errorMessage}</p>
     </div>
   );
 }

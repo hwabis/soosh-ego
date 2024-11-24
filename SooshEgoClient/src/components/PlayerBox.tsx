@@ -8,12 +8,12 @@ interface PlayerBoxProps {
 const PlayerBox = ({ player, isLocalPlayer }: PlayerBoxProps) => {
   return (
     <div className={`bg-white border-2 ${isLocalPlayer ? "border-green-600" : "border-red-900"} p-4 w-60 rounded`}>
-      <label className="block text-lg font-bold">
+      <p className="block text-lg font-bold">
         {isLocalPlayer ? `${player.name.value} (You)` : player.name.value}
-      </label>
-      <label className="block font-medium">
+      </p>
+      <p className="block font-medium">
         {player.connectionId ? "[Connected]" : "[Disconnected]"}
-      </label>
+      </p>
       <div className="mt-2">
         <p className="font-medium">Played Cards:</p>
         <ul className="list-disc list-inside">
