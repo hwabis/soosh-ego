@@ -20,7 +20,6 @@ const PlayScreen = () => {
   const connectionRef = useRef<HubConnection | null>(null);
   const isConnectingRef = useRef(false);
 
-  const [isGameStarted, setIsGameStarted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   useEffect(() => {
@@ -70,7 +69,10 @@ const PlayScreen = () => {
   }
 
   const handleStartGame = async () => {
-    setIsGameStarted(await startGame(gameId, error => setErrorMessage(error)));
+    const success = await startGame(gameId, error => setErrorMessage(error));
+    if (success) {
+      setErrorMessage("");
+    }
   }
 
   return (
@@ -80,7 +82,6 @@ const PlayScreen = () => {
         isPlayerHost={game.players.length > 0 && playerName === game.players[0].name.value}
         errorMessage={errorMessage}
         handleStartGame={handleStartGame}
-        isGameStarted={isGameStarted}
       />
       <div className="flex flex-wrap justify-center items-center gap-4">
         {game.players.map(player => (
