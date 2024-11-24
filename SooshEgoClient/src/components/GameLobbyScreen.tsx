@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { createGame, addPlayer } from '../services/ApiService';
+import { createGame, addPlayer } from '../services/GameLobbyApiService';
 
 const GameLobbyScreen = () => {
   const [playerName, setPlayerName] = useState('');
