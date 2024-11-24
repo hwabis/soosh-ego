@@ -1,17 +1,17 @@
 using Microsoft.Extensions.Logging;
 using Moq;
-using SooshEgoServer.GameManagement;
-using SooshEgoServer.GameManagement.Models;
+using SooshEgoServer.Models;
+using SooshEgoServer.Services;
 using Xunit;
 
-namespace SooshEgoServer.Tests.GameManagement
+namespace SooshEgoServer.Tests.Services
 {
-    public class GamesManagerTests
+    public class JoinAndLeaveGameTests
     {
         private readonly Mock<ILogger<GamesManager>> mockLogger;
         private readonly GamesManager gamesManager;
 
-        public GamesManagerTests()
+        public JoinAndLeaveGameTests()
         {
             mockLogger = new Mock<ILogger<GamesManager>>();
             gamesManager = new GamesManager(mockLogger.Object);

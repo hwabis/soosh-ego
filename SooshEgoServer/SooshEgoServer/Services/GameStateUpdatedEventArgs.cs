@@ -1,6 +1,6 @@
-﻿using SooshEgoServer.GameManagement.Models;
+﻿using SooshEgoServer.Models;
 
-namespace SooshEgoServer.GameManagement
+namespace SooshEgoServer.Services
 {
     public class GameStateUpdatedEventArgs(Game game) : EventArgs
     {

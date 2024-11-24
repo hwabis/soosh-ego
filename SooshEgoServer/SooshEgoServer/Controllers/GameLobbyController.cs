@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SooshEgoServer.GameManagement;
-using SooshEgoServer.GameManagement.Models;
+using SooshEgoServer.Models;
+using SooshEgoServer.Services;
 
 namespace SooshEgoServer.Controllers
 {
-    // todo controller-level unit test?
     [ApiController]
     [Route("api/gamelobby")]
     public class GameLobbyController(IGamesManager gamesManager) : ControllerBase

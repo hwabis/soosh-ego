@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using SooshEgoServer.GameManagement;
+using SooshEgoServer.Services;
 
 namespace SooshEgoServer.Hubs
 {
-    // todo hub-level unit test?
     public class GameHub(IGamesManager gamesManager) : Hub
     {
         public override async Task OnConnectedAsync()

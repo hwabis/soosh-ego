@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using SooshEgoServer.GameManagement;
-using SooshEgoServer.GameManagement.Models;
+using SooshEgoServer.Hubs;
+using SooshEgoServer.Models;
 
-namespace SooshEgoServer.Hubs
+namespace SooshEgoServer.Services
 {
     public class GameUpdateNotifier(IHubContext<GameHub> hubContext)
     {

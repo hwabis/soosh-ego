@@ -1,8 +1,8 @@
-﻿using SooshEgoServer.GameManagement.Models;
+﻿using SooshEgoServer.Models;
 using System.Text.Json;
 using Xunit;
 
-namespace SooshEgoServer.Tests.GameManagement
+namespace SooshEgoServer.Tests.Models
 {
     public class GameModelsTests
     {
