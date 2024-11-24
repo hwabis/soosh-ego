@@ -4,9 +4,11 @@ interface GameStatusProps {
   game: Game;
   isPlayerHost: boolean;
   errorMessage: string;
+  handleStartGame: () => void;
+  isGameStarted: boolean;
 }
 
-const GameStatus = ({ game, isPlayerHost, errorMessage }: GameStatusProps) => {
+const GameStatus = ({ game, isPlayerHost, errorMessage, handleStartGame, isGameStarted }: GameStatusProps) => {
   return (
     <div>
       <div className="absolute top-4 left-4">
@@ -15,7 +17,9 @@ const GameStatus = ({ game, isPlayerHost, errorMessage }: GameStatusProps) => {
           <label className="block font-medium text-white">Stage: {game.gameStage}</label>
           {isPlayerHost ? (
             <button
-              className="w-full text-white rounded p-2 my-2 bg-green-600 hover:bg-green-700">
+              className="w-full text-white rounded p-2 my-2 bg-green-600 hover:bg-green-700"
+              onClick={handleStartGame}
+              disabled={isGameStarted}>
               Start game!
             </button>
           ) : (

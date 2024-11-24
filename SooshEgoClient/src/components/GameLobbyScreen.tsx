@@ -33,7 +33,7 @@ const GameLobbyScreen = () => {
           <input
             type="text"
             value={playerName}
-            onChange={(e) => setPlayerName(e.target.value)}
+            onChange={e => setPlayerName(e.target.value)}
             className="block w-full rounded p-2"
           />
           <button
@@ -48,7 +48,7 @@ const GameLobbyScreen = () => {
           <input
             type="text"
             value={enteredGameId}
-            onChange={(e) => setEnteredGameId(e.target.value)}
+            onChange={e => setEnteredGameId(e.target.value)}
             className="block w-full rounded p-2"
           />
           <button

@@ -5,6 +5,7 @@ import { HubConnection } from "@microsoft/signalr";
 import { Game, GameStage } from "../models/Models";
 import GameStatus from "./GameStatus";
 import PlayerBox from "./PlayerBox";
+import { startGame } from "../services/GameLobbyApiService";
 
 const PlayScreen = () => {
   const [searchParams] = useSearchParams();
@@ -19,6 +20,7 @@ const PlayScreen = () => {
   const connectionRef = useRef<HubConnection | null>(null);
   const isConnectingRef = useRef(false);
 
+  const [isGameStarted, setIsGameStarted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   useEffect(() => {
@@ -67,12 +69,18 @@ const PlayScreen = () => {
     return (<p>Game ID or player name is missing from URL!</p>);
   }
 
+  const handleStartGame = async () => {
+    setIsGameStarted(await startGame(gameId, error => setErrorMessage(error)));
+  }
+
   return (
     <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
       <GameStatus
         game={game}
         isPlayerHost={game.players.length > 0 && playerName === game.players[0].name.value}
         errorMessage={errorMessage}
+        handleStartGame={handleStartGame}
+        isGameStarted={isGameStarted}
       />
       <div className="flex flex-wrap justify-center items-center gap-4">
         {game.players.map(player => (
