@@ -1,18 +1,18 @@
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
-import { GameState } from "../models/Models";
+import { Game } from "../models/Models";
 
 export const connectToGame = async (
    gameId: string,
    playerName: string,
-   onGameStateUpdated: (gameState: GameState) => void,
+   onGameUpdated: (updatedGame: Game) => void,
    onError: (error: string) => void): Promise<HubConnection> => {
    const connection = new HubConnectionBuilder()
       .withUrl(`${import.meta.env.VITE_SOOSH_EGO_API_URL}/game-hub?gameId=${gameId}&playerName=${playerName}`)
       .build();
 
-   connection.on("GameStateUpdated", (gameState: GameState) => {
+   connection.on("GameStateUpdated", (updatedGame: Game) => {
       console.log("SignalR game state updated");
-      onGameStateUpdated(gameState);
+      onGameUpdated(updatedGame);
    });
 
    connection.on("Error", (error: string) => {
