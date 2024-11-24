@@ -6,7 +6,7 @@ interface GameStatusProps {
 
 const GameStatus = ({ game }: GameStatusProps) => {
   return (
-    <div className="absolute top-4 left-4 p-4 bg-red-900">
+    <div className="absolute top-4 left-4 p-4 bg-red-900 rounded">
       <label className="block font-medium text-white">Game ID: {game.gameId.value}</label>
       <label className="block font-medium text-white">Stage: {game.gameStage}</label>
     </div>
