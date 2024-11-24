@@ -5,6 +5,7 @@ namespace SooshEgoServer.Models
     public class Card(CardType cardType)
     {
         [JsonPropertyName("cardType")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public CardType CardType { get; init; } = cardType;
     }
 

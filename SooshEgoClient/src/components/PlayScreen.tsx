@@ -3,6 +3,7 @@ import { connectToGame } from "../services/SignalRService";
 import { useEffect, useRef, useState } from "react";
 import { HubConnection } from "@microsoft/signalr";
 import { Game } from "../models/Models";
+import GameStatus from "./GameStatus";
 
 const PlayScreen = () => {
   const [searchParams] = useSearchParams();
@@ -61,9 +62,7 @@ const PlayScreen = () => {
 
   return (
     <div>
-      <h1>Play Screen</h1>
-      <p>Game ID: {gameId}</p>
-      <p>Player Name: {playerName}</p>
+      {game && <GameStatus game={game} />}
     </div>
   );
 }

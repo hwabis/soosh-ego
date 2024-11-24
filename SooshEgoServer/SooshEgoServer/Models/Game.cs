@@ -7,7 +7,8 @@ namespace SooshEgoServer.Models
         [JsonPropertyName("gameId")]
         public GameId GameId { get; init; } = gameId;
 
-        [JsonPropertyName("gameState")]
+        [JsonPropertyName("gameStage")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public GameStage GameStage { get; set; } = GameStage.Lobby;
 
         [JsonPropertyName("players")]
