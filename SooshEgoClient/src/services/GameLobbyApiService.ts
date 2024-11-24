@@ -1,6 +1,8 @@
 import { GameId } from "../models/Models";
 
-export const createGame = async (playerName: string): Promise<GameId> => {
+export const createGame = async (
+    playerName: string,
+    onError: (error: string) => void): Promise<GameId | null> => {
     const response = await fetch(`${import.meta.env.VITE_SOOSH_EGO_API_URL}/api/gamelobby/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -11,13 +13,17 @@ export const createGame = async (playerName: string): Promise<GameId> => {
 
     if (!response.ok) {
         const errorData = await response.text();
-        throw new Error(errorData);
+        onError(errorData);
+        return null;
     }
 
     return await response.json();
 };
 
-export const addPlayer = async (gameId: string, playerName: string): Promise<void> => {
+export const addPlayer = async (
+    gameId: string,
+    playerName: string,
+    onError: (error: string) => void): Promise<boolean> => {
     const response = await fetch(`${import.meta.env.VITE_SOOSH_EGO_API_URL}/api/gamelobby/add-player`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -29,6 +35,9 @@ export const addPlayer = async (gameId: string, playerName: string): Promise<voi
 
     if (!response.ok) {
         const errorData = await response.text();
-        throw new Error(errorData);
+        onError(errorData);
+        return false;
     }
+
+    return true;
 };

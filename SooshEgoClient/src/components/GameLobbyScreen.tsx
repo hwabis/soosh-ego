@@ -11,20 +11,16 @@ const GameLobbyScreen = () => {
   const navigate = useNavigate();
 
   const handleCreateGame = async () => {
-    try {
-      const newGameId = await createGame(playerName);
+    const newGameId = await createGame(playerName, error => setErrorMessage(error));
+    if (newGameId) {
       navigate(`/play?gameId=${encodeURIComponent(newGameId.value)}&playerName=${encodeURIComponent(playerName)}`);
-    } catch (error) {
-      setErrorMessage(String(error));
     }
   }
 
   const handleJoinGame = async () => {
-    try {
-      await addPlayer(enteredGameId, playerName);
+    const success = await addPlayer(enteredGameId, playerName, error => setErrorMessage(error));
+    if (success) {
       navigate(`/play?gameId=${encodeURIComponent(enteredGameId)}&playerName=${encodeURIComponent(playerName)}`);
-    } catch (error) {
-      setErrorMessage(String(error));
     }
   }
 
