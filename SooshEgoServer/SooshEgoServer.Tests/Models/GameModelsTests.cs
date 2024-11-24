@@ -30,19 +30,19 @@ namespace SooshEgoServer.Tests.Models
 
             Assert.NotNull(deserializedGame);
 
-            Assert.True(game.GameId.Value == "summoners rift");
-            Assert.True(game.GameStage == GameStage.Round1);
+            Assert.True(deserializedGame.GameId.Value == "summoners rift");
+            Assert.True(deserializedGame.GameStage == GameStage.Round1);
 
-            Assert.True(game.Players[0].Name.Value == "gragas");
-            Assert.Null(game.Players[0].ConnectionId);
-            Assert.True(game.Players[0].CardsInHand.Count == 1);
-            Assert.True(game.Players[0].CardsInHand[0].CardType == CardType.MakiRoll1);
-            Assert.True(game.Players[0].CardsInPlay.Count == 3);
+            Assert.True(deserializedGame.Players[0].Name.Value == "gragas");
+            Assert.Null(deserializedGame.Players[0].ConnectionId);
+            Assert.True(deserializedGame.Players[0].CardsInHand.Count == 1);
+            Assert.True(deserializedGame.Players[0].CardsInHand[0].CardType == CardType.MakiRoll1);
+            Assert.True(deserializedGame.Players[0].CardsInPlay.Count == 3);
 
-            Assert.True(game.Players[1].Name.Value == "jonx");
-            Assert.True(game.Players[1].ConnectionId == "jonx-connection-id");
-            Assert.True(game.Players[1].CardsInHand.Count == 0);
-            Assert.True(game.Players[1].CardsInPlay.Count == 0);
+            Assert.True(deserializedGame.Players[1].Name.Value == "jonx");
+            Assert.True(deserializedGame.Players[1].ConnectionId == "jonx-connection-id");
+            Assert.True(deserializedGame.Players[1].CardsInHand.Count == 0);
+            Assert.True(deserializedGame.Players[1].CardsInPlay.Count == 0);
         }
     }
 }
