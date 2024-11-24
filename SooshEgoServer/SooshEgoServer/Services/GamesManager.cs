@@ -189,12 +189,17 @@ namespace SooshEgoServer.Services
                 }
 
                 matchingGame.GameStage = GameStage.Round1;
+
+                DistributeCardsToPlayers(matchingGame);
+
                 logger.LogInformation("{GameId} has started", gameId);
 
                 GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));
                 return (true, "");
             }
         }
+
+        #endregion
 
         private GameId CreateNewGameId()
         {
@@ -215,6 +220,40 @@ namespace SooshEgoServer.Services
             return new GameId(result.ToString());
         }
 
-        #endregion
+        private void DistributeCardsToPlayers(Game game)
+        {
+            var numberOfCardsInStartingHand = game.Players.Count switch
+            {
+                2 => 10,
+                3 => 9,
+                4 => 8,
+                5 => 7,
+                _ => throw new Exception("Started a game with an invalid number of players."),
+            };
+
+            foreach (Player player in game.Players)
+            {
+                for (int i = 0; i < numberOfCardsInStartingHand; i++)
+                {
+                    DrawCard(game, player);
+                }
+            }
+        }
+
+        private void DrawCard(Game game, Player playerDrawingCard)
+        {
+            if (!game.Players.Contains(playerDrawingCard))
+            {
+                throw new Exception("Player is not in the correct game.");
+            }
+
+            if (!game.Deck.TryPop(out Card? drawnCard))
+            {
+                logger.LogError("In game {GameId}, the deck is out of cards!", game.GameId);
+                return;
+            }
+
+            playerDrawingCard.CardsInHand.Add(drawnCard);
+        }
     }
 }

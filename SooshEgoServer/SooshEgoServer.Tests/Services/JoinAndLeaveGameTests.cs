@@ -6,7 +6,6 @@ using Xunit;
 
 namespace SooshEgoServer.Tests.Services
 {
-    // todo tests for game stage, trying to make moves in certain stage, etc.
     public class JoinAndLeaveGameTests
     {
         private readonly Mock<ILogger<GamesManager>> mockLogger;
@@ -127,10 +126,16 @@ namespace SooshEgoServer.Tests.Services
             (bool success, string _) = gamesManager.StartGame(gameId);
             Assert.False(success);
 
-            gamesManager.AddPlayerToGame(gameId, new("player1"));
+            gamesManager.AddPlayerToGame(gameId, new("player2"));
             (success, string _) = gamesManager.StartGame(gameId);
             Assert.True(success);
             Assert.True(gamesManager.GetGameState(gameId).game!.GameStage == GameStage.Round1);
+
+            foreach (Player player in gamesManager.GetGameState(gameId).game!.Players)
+            {
+                // 2 players, so 10 cards each
+                Assert.True(player.CardsInHand.Count == 10);
+            }
         }
 
         // todo need a test for deleting rooms that have 1 person who's added but never connected
