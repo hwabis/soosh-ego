@@ -118,6 +118,21 @@ namespace SooshEgoServer.Tests.Services
             Assert.Equal(3, eventFiredCount);
         }
 
+        [Fact]
+        public void StartGame_RequiresPlayers()
+        {
+            (bool _, GameId? gameId, _) = gamesManager.CreateAndAddPlayerToGame(new("host"));
+            Assert.NotNull(gameId);
+
+            (bool success, string _) = gamesManager.StartGame(gameId);
+            Assert.False(success);
+
+            gamesManager.AddPlayerToGame(gameId, new("player1"));
+            (success, string _) = gamesManager.StartGame(gameId);
+            Assert.True(success);
+            Assert.True(gamesManager.GetGameState(gameId).game!.GameStage == GameStage.Round1);
+        }
+
         // todo need a test for deleting rooms that have 1 person who's added but never connected
     }
 }

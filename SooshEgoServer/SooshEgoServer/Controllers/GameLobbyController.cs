@@ -34,6 +34,19 @@ namespace SooshEgoServer.Controllers
             return Ok();
         }
 
+        [HttpPost("start")]
+        public IActionResult StartGame([FromBody] GameId gameId)
+        {
+            (bool success, string error) = gamesManager.StartGame(gameId);
+
+            if (!success)
+            {
+                return BadRequest(error);
+            }
+
+            return Ok();
+        }
+
         public record JoinGameRequest(GameId GameId, PlayerName PlayerName);
     }
 }

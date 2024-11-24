@@ -13,68 +13,7 @@ namespace SooshEgoServer.Services
 
         public event EventHandler<GameStateUpdatedEventArgs>? GameStateUpdated;
 
-        public (bool success, GameId? gameId, string error) CreateAndAddPlayerToGame(PlayerName playerName)
-        {
-            lock (gamesLock)
-            {
-                GameId newId = CreateNewGameId();
-                Game newGame = new(newId);
-                games.Add(newId, newGame);
-
-                (bool success, string errorMessage) = AddPlayerToGame(newId, playerName);
-
-                if (!success)
-                {
-                    if (!games.Remove(newId))
-                    {
-                        throw new Exception($"Couldn't remove non-existant game {newId}");
-                    }
-
-                    return (false, null, errorMessage);
-                }
-
-                logger.LogInformation("Created {GameId}", newId);
-
-                return (true, newId, "");
-            }
-        }
-
-        public (bool success, string error) AddPlayerToGame(GameId gameId, PlayerName playerName)
-        {
-            if (playerName.Value == string.Empty)
-            {
-                return (false, "Player name cannot be empty.");
-            }
-
-            lock (gamesLock)
-            {
-                if (!games.TryGetValue(gameId, out Game? matchingGame))
-                {
-                    return (false, "There is no game with the specified game ID.");
-                }
-
-                if (matchingGame.Players.Count >= gamePlayerLimit)
-                {
-                    if (matchingGame.Players.Count > gamePlayerLimit)
-                    {
-                        throw new Exception($"There were more than {gamePlayerLimit} players in {gameId}");
-                    }
-
-                    return (false, "The game's lobby is full.");
-                }
-
-                if (matchingGame.Players.Any(player => player.Name == playerName))
-                {
-                    return (false, "The name is already taken.");
-                }
-
-                matchingGame.Players.Add(new Player(playerName));
-                logger.LogInformation("{PlayerName} added to {GameId}", playerName, gameId);
-
-                GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));
-                return (true, "");
-            }
-        }
+        #region General
 
         public (bool success, Game? game) GetGameState(GameId gameId)
         {
@@ -158,6 +97,105 @@ namespace SooshEgoServer.Services
             }
         }
 
+        #endregion
+
+        #region Lobby
+
+        public (bool success, GameId? gameId, string error) CreateAndAddPlayerToGame(PlayerName playerName)
+        {
+            lock (gamesLock)
+            {
+                GameId newId = CreateNewGameId();
+                Game newGame = new(newId);
+                games.Add(newId, newGame);
+
+                (bool success, string errorMessage) = AddPlayerToGame(newId, playerName);
+
+                if (!success)
+                {
+                    if (!games.Remove(newId))
+                    {
+                        throw new Exception($"Couldn't remove non-existant game {newId}");
+                    }
+
+                    return (false, null, errorMessage);
+                }
+
+                logger.LogInformation("Created {GameId}", newId);
+
+                return (true, newId, "");
+            }
+        }
+
+        public (bool success, string error) AddPlayerToGame(GameId gameId, PlayerName playerName)
+        {
+            if (playerName.Value == string.Empty)
+            {
+                return (false, "Player name cannot be empty.");
+            }
+
+            lock (gamesLock)
+            {
+                if (!games.TryGetValue(gameId, out Game? matchingGame))
+                {
+                    return (false, "There is no game with the specified game ID.");
+                }
+
+                if (matchingGame.GameStage != GameStage.Lobby)
+                {
+                    return (false, "The game has already started.");
+                }
+
+                if (matchingGame.Players.Count >= gamePlayerLimit)
+                {
+                    if (matchingGame.Players.Count > gamePlayerLimit)
+                    {
+                        throw new Exception($"There were more than {gamePlayerLimit} players in {gameId}");
+                    }
+
+                    return (false, "The game's lobby is full.");
+                }
+
+                if (matchingGame.Players.Any(player => player.Name == playerName))
+                {
+                    return (false, "The name is already taken.");
+                }
+
+                matchingGame.Players.Add(new Player(playerName));
+                logger.LogInformation("{PlayerName} added to {GameId}", playerName, gameId);
+
+                GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));
+                return (true, "");
+            }
+        }
+
+        public (bool success, string error) StartGame(GameId gameId)
+        {
+            lock (gamesLock)
+            {
+                if (!games.TryGetValue(gameId, out Game? matchingGame))
+                {
+                    return (false, "There is no game with the specified game ID.");
+                }
+
+                if (matchingGame.GameStage != GameStage.Lobby)
+                {
+                    return (false, "The game is already in-progress.");
+                }
+
+                if (matchingGame.Players.Count < 2)
+                {
+                    return (false, "Requires at least two players to start.");
+                }
+
+                matchingGame.GameStage = GameStage.Round1;
+                logger.LogInformation("{GameId} has started", gameId);
+
+                GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));
+                return (true, "");
+            }
+        }
+
         private GameId CreateNewGameId()
         {
             const string charSet = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -176,5 +214,7 @@ namespace SooshEgoServer.Services
 
             return new GameId(result.ToString());
         }
+
+        #endregion
     }
 }
