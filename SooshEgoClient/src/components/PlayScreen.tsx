@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { HubConnection } from "@microsoft/signalr";
 import { Game, GameStage } from "../models/Models";
 import GameStatus from "./GameStatus";
+import PlayerBox from "./PlayerBox";
 
 const PlayScreen = () => {
   const [searchParams] = useSearchParams();
@@ -65,8 +66,17 @@ const PlayScreen = () => {
   }
 
   return (
-    <div>
+    <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
       <GameStatus game={game} />
+      <div className="flex flex-wrap justify-center items-center gap-4">
+        {game.players.map(player => (
+          <PlayerBox
+            key={player.name.value}
+            player={player}
+            isLocalPlayer={player.name.value === playerName}
+          />
+        ))}
+      </div>
     </div>
   );
 }
