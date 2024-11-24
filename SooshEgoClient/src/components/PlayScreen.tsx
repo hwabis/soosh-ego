@@ -19,6 +19,8 @@ const PlayScreen = () => {
   const connectionRef = useRef<HubConnection | null>(null);
   const isConnectingRef = useRef(false);
 
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
   useEffect(() => {
     if (!gameId || !playerName) {
       return;
@@ -43,10 +45,10 @@ const PlayScreen = () => {
           gameId,
           playerName,
           updatedGame => setGame(updatedGame),
-          error => console.error("haha im logging the error again ", error) // todo set text or something
+          error => setErrorMessage(error)
         );
       } catch (error) {
-        console.error(error); // todo set text or something
+        setErrorMessage(String(error));
       }
 
       isConnectingRef.current = false;
@@ -67,7 +69,10 @@ const PlayScreen = () => {
 
   return (
     <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
-      <GameStatus game={game} />
+      <GameStatus
+        game={game}
+        errorMessage={errorMessage}
+      />
       <div className="flex flex-wrap justify-center items-center gap-4">
         {game.players.map(player => (
           <PlayerBox

@@ -63,7 +63,7 @@ const GameLobbyScreen = () => {
           </button>
         </div>
       </div>
-      <div className="text-red-900 font-medium h-6 m-4">{errorMessage}</div>
+      <div className="block font-medium text-red-900 h-6 m-4">{errorMessage}</div>
     </div>
   );
 }
