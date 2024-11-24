@@ -2,7 +2,7 @@ import { useSearchParams } from "react-router-dom";
 import { connectToGame } from "../services/SignalRService";
 import { useEffect, useRef, useState } from "react";
 import { HubConnection } from "@microsoft/signalr";
-import { Game } from "../models/Models";
+import { Game, GameStage } from "../models/Models";
 import GameStatus from "./GameStatus";
 
 const PlayScreen = () => {
@@ -10,7 +10,11 @@ const PlayScreen = () => {
   const gameId = searchParams.get("gameId");
   const playerName = searchParams.get("playerName");
 
-  const [game, setGame] = useState<Game>();
+  const [game, setGame] = useState<Game>({
+    gameId: { value: "" },
+    gameStage: GameStage.Lobby,
+    players: [],
+  });
   const connectionRef = useRef<HubConnection | null>(null);
   const isConnectingRef = useRef(false);
 
@@ -62,7 +66,7 @@ const PlayScreen = () => {
 
   return (
     <div>
-      {game && <GameStatus game={game} />}
+      <GameStatus game={game} />
     </div>
   );
 }
