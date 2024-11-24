@@ -9,32 +9,40 @@ namespace SooshEgoServer.Tests.Models
         [Fact]
         public void Models_Serializable()
         {
-            Game game = new(new("bomba"))
+            Game game = new(new("summoners rift"))
             {
-                Players =
-                [
-                    new(new("gragas")),
-                    new(new("jonx"))
-                    {
-                        ConnectionId = "jonx-connection-id"
-                    },
-                ]
+                GameStage = GameStage.Round1
             };
+
+            Player gragas = new(new("gragas"));
+            gragas.CardsInHand.AddRange([new(CardType.MakiRoll1)]);
+            gragas.CardsInPlay.AddRange([new(CardType.Tempura), new(CardType.Sashimi), new(CardType.Dumpling)]);
+
+            Player jonx = new(new("jonx"))
+            {
+                ConnectionId = "jonx-connection-id"
+            };
+
+            game.Players.AddRange([gragas, jonx]);
 
             string json = JsonSerializer.Serialize(game);
             Game? deserializedGame = JsonSerializer.Deserialize<Game>(json);
 
             Assert.NotNull(deserializedGame);
 
-            Assert.True(game.GameId.Value == "bomba");
+            Assert.True(game.GameId.Value == "summoners rift");
+            Assert.True(game.GameStage == GameStage.Round1);
 
             Assert.True(game.Players[0].Name.Value == "gragas");
             Assert.Null(game.Players[0].ConnectionId);
+            Assert.True(game.Players[0].CardsInHand.Count == 1);
+            Assert.True(game.Players[0].CardsInHand[0].CardType == CardType.MakiRoll1);
+            Assert.True(game.Players[0].CardsInPlay.Count == 3);
 
             Assert.True(game.Players[1].Name.Value == "jonx");
             Assert.True(game.Players[1].ConnectionId == "jonx-connection-id");
-
-            // todo as we add more state fields to each player, make sure they are serialized correctly
+            Assert.True(game.Players[1].CardsInHand.Count == 0);
+            Assert.True(game.Players[1].CardsInPlay.Count == 0);
         }
     }
 }

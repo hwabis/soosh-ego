@@ -6,6 +6,7 @@ using Xunit;
 
 namespace SooshEgoServer.Tests.Services
 {
+    // todo tests for game stage, trying to make moves in certain stage, etc.
     public class JoinAndLeaveGameTests
     {
         private readonly Mock<ILogger<GamesManager>> mockLogger;

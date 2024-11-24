@@ -1,8 +1,5 @@
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
-
-export interface GameState {
-   value: string; // todo
-}
+import { GameState } from "../models/Models";
 
 export const connectToGame = async (
    gameId: string,

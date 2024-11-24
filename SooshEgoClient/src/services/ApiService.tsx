@@ -1,10 +1,4 @@
-export interface GameId {
-    value: string;
-}
-
-export interface PlayerName {
-    value: string;
-}
+import { GameId } from "../models/Models";
 
 export const createGame = async (playerName: string): Promise<GameId> => {
     const response = await fetch(`${import.meta.env.VITE_SOOSH_EGO_API_URL}/api/gamelobby/create`, {

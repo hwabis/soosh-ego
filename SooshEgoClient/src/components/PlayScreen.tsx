@@ -1,14 +1,15 @@
 import { useSearchParams } from "react-router-dom";
-import { connectToGame, GameState } from "../services/SignalRService";
+import { connectToGame } from "../services/SignalRService";
 import { useEffect, useRef, useState } from "react";
 import { HubConnection } from "@microsoft/signalr";
+import { Game } from "../models/Models";
 
 const PlayScreen = () => {
   const [searchParams] = useSearchParams();
   const gameId = searchParams.get("gameId");
   const playerName = searchParams.get("playerName");
 
-  const [gameState, setGameState] = useState<GameState>();
+  const [game, setGame] = useState<Game>();
   const connectionRef = useRef<HubConnection | null>(null);
   const isConnectingRef = useRef(false);
 
@@ -35,7 +36,7 @@ const PlayScreen = () => {
         connectionRef.current = await connectToGame(
           gameId,
           playerName,
-          updatedGameState => setGameState(updatedGameState),
+          updatedGame => setGame(updatedGame),
           error => console.error("haha im logging the error again ", error) // todo set text or something
         );
       } catch (error) {
