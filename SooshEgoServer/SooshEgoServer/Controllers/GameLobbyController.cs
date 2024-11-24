@@ -34,6 +34,8 @@ namespace SooshEgoServer.Controllers
             return Ok();
         }
 
+        public record JoinGameRequest(GameId GameId, PlayerName PlayerName);
+
         [HttpPost("start-game")]
         public IActionResult StartGame([FromBody] GameId gameId)
         {
@@ -46,7 +48,5 @@ namespace SooshEgoServer.Controllers
 
             return Ok();
         }
-
-        public record JoinGameRequest(GameId GameId, PlayerName PlayerName);
     }
 }
