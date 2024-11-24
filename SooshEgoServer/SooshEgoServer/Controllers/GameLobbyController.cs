@@ -34,7 +34,7 @@ namespace SooshEgoServer.Controllers
             return Ok();
         }
 
-        [HttpPost("start")]
+        [HttpPost("start-game")]
         public IActionResult StartGame([FromBody] GameId gameId)
         {
             (bool success, string error) = gamesManager.StartGame(gameId);
