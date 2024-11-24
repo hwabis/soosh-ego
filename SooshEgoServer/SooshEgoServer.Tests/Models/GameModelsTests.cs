@@ -14,7 +14,10 @@ namespace SooshEgoServer.Tests.Models
                 Players =
                 [
                     new(new("gragas")),
-                    new(new("jonx")),
+                    new(new("jonx"))
+                    {
+                        ConnectionId = "jonx-connection-id"
+                    },
                 ]
             };
 
@@ -24,8 +27,12 @@ namespace SooshEgoServer.Tests.Models
             Assert.NotNull(deserializedGame);
 
             Assert.True(game.GameId.Value == "bomba");
+
             Assert.True(game.Players[0].Name.Value == "gragas");
+            Assert.Null(game.Players[0].ConnectionId);
+
             Assert.True(game.Players[1].Name.Value == "jonx");
+            Assert.True(game.Players[1].ConnectionId == "jonx-connection-id");
 
             // todo as we add more state fields to each player, make sure they are serialized correctly
         }
