@@ -4,16 +4,8 @@ using SooshEgoServer.GameManagement;
 namespace SooshEgoServer.Hubs
 {
     // todo hub-level unit test?
-    public class GameHub : Hub
+    public class GameHub(IGamesManager gamesManager) : Hub
     {
-        private readonly IGamesManager gamesManager;
-
-        public GameHub(IGamesManager gamesManager, GameUpdateNotifier gameUpdateNotifier)
-        {
-            this.gamesManager = gamesManager;
-            this.gamesManager.GameStateUpdated += gameUpdateNotifier.NotifyGameStateUpdated;
-        }
-
         public override async Task OnConnectedAsync()
         {
             string? gameId = Context.GetHttpContext()?.Request.Query["gameId"];

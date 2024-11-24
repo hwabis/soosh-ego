@@ -13,7 +13,7 @@ namespace SooshEgoServer.Hubs
 
         private async Task NotifyGameStateUpdated(Game game)
         {
-            var connectionIds = game.Players
+            IEnumerable<string> connectionIds = game.Players
                 .Where(player => player.ConnectionId != null)
                 .Select(player => player.ConnectionId!);
 

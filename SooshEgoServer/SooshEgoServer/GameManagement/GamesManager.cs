@@ -32,12 +32,10 @@ namespace SooshEgoServer.GameManagement
 
                     return (false, null, errorMessage);
                 }
-                else
-                {
-                    logger.LogInformation("Created {GameId}", newId);
 
-                    return (true, newId, "");
-                }
+                logger.LogInformation("Created {GameId}", newId);
+
+                return (true, newId, "");
             }
         }
 
@@ -71,10 +69,9 @@ namespace SooshEgoServer.GameManagement
                 }
 
                 matchingGame.Players.Add(new Player(playerName));
-                logger.LogInformation("{PlayerName} joined {GameId}", playerName, gameId);
+                logger.LogInformation("{PlayerName} added to {GameId}", playerName, gameId);
 
                 GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));
-
                 return (true, "");
             }
         }

@@ -8,7 +8,7 @@ namespace SooshEgoServer
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddCors(options =>
             {
@@ -32,7 +32,7 @@ namespace SooshEgoServer
             builder.Services.AddSingleton<IGamesManager, GamesManager>();
             builder.Services.AddSingleton<GameUpdateNotifier>();
 
-            var app = builder.Build();
+            WebApplication app = builder.Build();
 
             if (app.Environment.IsDevelopment())
             {
@@ -45,8 +45,16 @@ namespace SooshEgoServer
 
             app.MapControllers();
             app.MapHub<GameHub>($"/game-hub");
+            SubscribeGameNotifierToGamesManager(app);
 
             app.Run();
+        }
+
+        private static void SubscribeGameNotifierToGamesManager(WebApplication app)
+        {
+            IGamesManager gamesManager = app.Services.GetRequiredService<IGamesManager>();
+            GameUpdateNotifier notifier = app.Services.GetRequiredService<GameUpdateNotifier>();
+            gamesManager.GameStateUpdated += notifier.NotifyGameStateUpdated;
         }
     }
 }
