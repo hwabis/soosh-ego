@@ -71,6 +71,7 @@ const PlayScreen = () => {
     <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
       <GameStatus
         game={game}
+        isPlayerHost={game.players.length > 0 && playerName === game.players[0].name.value}
         errorMessage={errorMessage}
       />
       <div className="flex flex-wrap justify-center items-center gap-4">
