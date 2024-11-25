@@ -61,3 +61,29 @@ export const startGame = async (
 
     return true;
 };
+
+export const playCard = async (
+    gameId: string,
+    playerName: string,
+    card1Index: number,
+    card2Index: number,
+    onError: (error: string) => void): Promise<boolean> => {
+    const response = await fetch(`${import.meta.env.VITE_SOOSH_EGO_API_URL}/api/play-card`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            GameId: { value: gameId },
+            PlayerName: { value: playerName },
+            Card1Index: card1Index,
+            Card2Index: card2Index,
+        })
+    });
+
+    if (!response.ok) {
+        const errorData = await response.text();
+        onError(errorData);
+        return false;
+    }
+
+    return true;
+};
