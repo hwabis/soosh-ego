@@ -16,6 +16,9 @@ namespace SooshEgoServer.Models
         [JsonPropertyName("finishedTurn")]
         public bool FinishedTurn { get; set; } = false;
 
+        [JsonPropertyName("pointsAtEndOfPreviousRound")]
+        public int PointsAtEndOfPreviousRound { get; set; } = 0;
+
         // todo someone could technically get the game state to send before everyone has made their move by reconnecting.
         // make a field ignored by the json to track the player's "queued move" or something
 
