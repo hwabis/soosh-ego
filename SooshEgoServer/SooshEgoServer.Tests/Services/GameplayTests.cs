@@ -64,6 +64,23 @@ namespace SooshEgoServer.Tests.Services
         }
 
         [Fact]
+        public void PlayCard_TwoCardsRequiresChopsticks()
+        {
+            (bool _, GameId? gameId, _) = gamesManager.CreateAndAddPlayerToGame(new("player1"));
+            Assert.NotNull(gameId);
+
+            gamesManager.AddPlayerToGame(gameId, new("player2"));
+            gamesManager.StartGame(gameId);
+
+            (bool success1, string _) = gamesManager.PlayCard(gameId, new("player1"), 4, 5);
+            Assert.False(success1);
+
+            gamesManager.GetGameState(gameId).game!.Players[0].CardsInPlay.Add(new Card(CardType.Chopsticks));
+            (bool success2, string _) = gamesManager.PlayCard(gameId, new("player1"), 4, 5);
+            Assert.True(success2);
+        }
+
+        [Fact]
         public void PlayCard_RoundComplete()
         {
             // todo

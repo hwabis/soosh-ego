@@ -238,18 +238,23 @@ namespace SooshEgoServer.Services
 
                 if (card1 == null)
                 {
-                    return (false, "Requested card index is out of bounds.");
+                    return (false, "{PlayerName} in {GameId} requested out of bounds card index.");
                 }
 
                 Card? card2 = null;
 
                 if (indexOfSecondCardInHandUsingChopsticks != null)
                 {
+                    if (!player.CardsInPlay.Any(card => card.CardType == CardType.Chopsticks))
+                    {
+                        return (false, "{PlayerName} in {GameId} tried to play two cards but did not have chopsticks.");
+                    }
+
                     card2 = TryGetCard(player, indexOfCardInHand);
 
                     if (card2 == null)
                     {
-                        return (false, "Requested card index is out of bounds.");
+                        return (false, "{PlayerName} in {GameId} requested out of bounds card index.");
                     }
                 }
 
