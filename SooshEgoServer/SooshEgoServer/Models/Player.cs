@@ -13,6 +13,12 @@ namespace SooshEgoServer.Models
         [JsonPropertyName("cardsInPlay")]
         public List<Card> CardsInPlay { get; init; } = [];
 
+        [JsonPropertyName("finishedTurn")]
+        public bool FinishedTurn { get; set; } = false;
+
+        // todo someone could technically get the game state to send before everyone has made their move by reconnecting.
+        // make a field ignored by the json to track the player's "queued move" or something
+
         [JsonPropertyName("connectionId")]
         public string? ConnectionId { get; set; }
     }

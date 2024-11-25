@@ -22,6 +22,7 @@ export interface Player {
     name: PlayerName;
     cardsInHand: Card[];
     cardsInPlay: Card[];
+    finishedTurn: boolean;
     connectionId: string | null;
 }
 

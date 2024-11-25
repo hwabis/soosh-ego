@@ -89,6 +89,7 @@ const PlayScreen = () => {
             key={player.name.value}
             player={player}
             isLocalPlayer={player.name.value === playerName}
+            gameStage={game.gameStage}
           />
         ))}
       </div>
