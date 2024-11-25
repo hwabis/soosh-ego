@@ -192,9 +192,19 @@ namespace SooshEgoServer.Services
 
                 matchingGame.GameStage = GameStage.Playing;
 
+                foreach (Player player in matchingGame.Players)
+                {
+                    player.CardsInHand.RemoveAll(card => card.CardType != CardType.Pudding);
+
+                    if (player.CardsInHand.Count > 0)
+                    {
+                        logger.LogError("{PlayerName} in {GameId} did not have an empty hand at the start of the round", player.Name, gameId);
+                    }
+                }
+
                 DistributeCardsFromDeck(matchingGame);
 
-                logger.LogInformation("{GameId} has started", gameId);
+                logger.LogInformation("{GameId} has started round {Round}", gameId, matchingGame.NumberOfRoundsCompleted + 1);
 
                 GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));
                 return (true, "");
