@@ -6,12 +6,12 @@ using Xunit;
 
 namespace SooshEgoServer.Tests.Services
 {
-    public class GameLogicTests
+    public class GameplayTests
     {
         private readonly Mock<ILogger<GamesManager>> mockLogger;
         private readonly GamesManager gamesManager;
 
-        public GameLogicTests()
+        public GameplayTests()
         {
             mockLogger = new Mock<ILogger<GamesManager>>();
             gamesManager = new GamesManager(mockLogger.Object);

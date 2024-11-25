@@ -5,7 +5,7 @@ using SooshEgoServer.Services;
 namespace SooshEgoServer.Controllers
 {
     [ApiController]
-    [Route("api/gamelobby")]
+    [Route("api")]
     public class GameLobbyController(IGamesManager gamesManager) : ControllerBase
     {
         [HttpPost("create")]
@@ -48,5 +48,21 @@ namespace SooshEgoServer.Controllers
 
             return Ok();
         }
+
+        [HttpPost("play-card")]
+        public IActionResult PlayCard([FromBody] PlayCardRequest request)
+        {
+            (bool success, string error) = gamesManager.PlayCard(
+                request.GameId, request.PlayerName, request.Card1Index, request.Card2Index);
+
+            if (!success)
+            {
+                return BadRequest(error);
+            }
+
+            return Ok();
+        }
+
+        public record PlayCardRequest(GameId GameId, PlayerName PlayerName, int Card1Index, int? Card2Index);
     }
 }
