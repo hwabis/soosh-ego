@@ -9,7 +9,9 @@ namespace SooshEgoServer.Models
 
         [JsonPropertyName("gameStage")]
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public GameStage GameStage { get; set; } = GameStage.Lobby;
+        public GameStage GameStage { get; set; } = GameStage.Lobby; // todo "lobby" --> "waiting", replace the 3 stages with just 1 "playing" stage and define the 3 as as const somewhere
+                                                                    // make a new field here for NumberOfRoundsCompleted
+                                                                    // on the client end, also display "rounds completed:"
 
         [JsonPropertyName("players")]
         public List<Player> Players { get; init; } = [];

@@ -8,7 +8,7 @@ namespace SooshEgoServer.Models
         public PlayerName Name { get; init; } = name;
 
         [JsonPropertyName("cardsInHand")]
-        public List<Card> CardsInHand { get; init; } = [];
+        public List<Card> CardsInHand { get; set; } = [];
 
         [JsonPropertyName("cardsInPlay")]
         public List<Card> CardsInPlay { get; init; } = [];

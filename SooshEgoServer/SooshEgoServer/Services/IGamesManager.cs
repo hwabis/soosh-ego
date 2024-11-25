@@ -27,6 +27,9 @@ namespace SooshEgoServer.Services
 
         #region Gameplay
 
+        public (bool success, string error) PlayCard(
+            GameId gameId, PlayerName playername, int indexOfCardInHand, int? indexOfSecondCardInHandUsingChopsticks);
+
         #endregion
     }
 }

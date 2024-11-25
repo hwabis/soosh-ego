@@ -17,6 +17,56 @@ namespace SooshEgoServer.Tests.Services
             gamesManager = new GamesManager(mockLogger.Object);
         }
 
-        // todo
+        [Fact]
+        public void PlayCard_ShouldNotAllowTwoMoves()
+        {
+            (bool _, GameId? gameId, _) = gamesManager.CreateAndAddPlayerToGame(new("player1"));
+            Assert.NotNull(gameId);
+
+            gamesManager.AddPlayerToGame(gameId, new("player2"));
+            gamesManager.StartGame(gameId);
+
+            (bool success1, string _) = gamesManager.PlayCard(gameId, new("player1"), 4, null);
+            Assert.True(success1);
+
+            (bool success2, string _) = gamesManager.PlayCard(gameId, new("player1"), 4, null);
+            Assert.False(success2);
+        }
+
+        [Fact]
+        public void PlayCard_ShouldRotateHandsToTheRight()
+        {
+            (bool _, GameId? gameId, _) = gamesManager.CreateAndAddPlayerToGame(new("player1"));
+            Assert.NotNull(gameId);
+
+            gamesManager.AddPlayerToGame(gameId, new("player2"));
+            gamesManager.AddPlayerToGame(gameId, new("player3"));
+            gamesManager.StartGame(gameId);
+
+            (bool success1, string _) = gamesManager.PlayCard(gameId, new("player1"), 4, null);
+            Assert.True(success1);
+
+            List<Card> oldPlayer1Cards = gamesManager.GetGameState(gameId).game!.Players[0].CardsInHand.ToList();
+
+            (bool success2, string _) = gamesManager.PlayCard(gameId, new("player2"), 5, null);
+            Assert.True(success2);
+
+            (bool success3, string _) = gamesManager.PlayCard(gameId, new("player3"), 0, null);
+            Assert.True(success3);
+
+            // At this point, player 1's hand becomes player 2's
+            List<Card> player2Hand = gamesManager.GetGameState(gameId).game!.Players[1].CardsInHand;
+
+            for (int i = 0; i < player2Hand.Count; i++)
+            {
+                Assert.True(oldPlayer1Cards[i].CardType == player2Hand[i].CardType);
+            }
+        }
+
+        [Fact]
+        public void PlayCard_RoundComplete()
+        {
+            // todo
+        }
     }
 }

@@ -9,7 +9,7 @@ namespace SooshEgoServer.Services
         private const int gameIdLength = 6;
         private const int gamePlayerLimit = 5;
 
-        private readonly object gamesLock = new();
+        private readonly object gamesLock = new(); // todo revisit if i'm over-locking
 
         public event EventHandler<GameStateUpdatedEventArgs>? GameStateUpdated;
 
@@ -44,7 +44,7 @@ namespace SooshEgoServer.Services
                 if (player == null)
                 {
                     logger.LogWarning("{PlayerName} tried to connect to {GameId}, but the player did not exist in the game", playerName, gameId);
-                    return (false, "There is no player with that name.");
+                    return (false, "There is no player in the game with that name.");
                 }
 
                 if (player.ConnectionId != null)
@@ -190,7 +190,7 @@ namespace SooshEgoServer.Services
 
                 matchingGame.GameStage = GameStage.Round1;
 
-                DistributeCardsToPlayers(matchingGame);
+                DistributeCardsFromDeck(matchingGame);
 
                 logger.LogInformation("{GameId} has started", gameId);
 
@@ -202,6 +202,94 @@ namespace SooshEgoServer.Services
         #endregion
 
         #region Gameplay
+
+        public (bool success, string error) PlayCard(
+            GameId gameId, PlayerName playerName, int indexOfCardInHand, int? indexOfSecondCardInHandUsingChopsticks)
+        {
+            if (indexOfCardInHand == indexOfSecondCardInHandUsingChopsticks)
+            {
+                logger.LogWarning("{PlayerName} in {GameId} tried to play the card at index {Index} twice", playerName, gameId, indexOfCardInHand);
+                return (false, "Cannot play the same card twice in one turn.");
+            }
+
+            lock (gamesLock)
+            {
+                if (!games.TryGetValue(gameId, out Game? matchingGame))
+                {
+                    logger.LogWarning("{PlayerName} tried to play a card, but the game {GameId} did not exist", playerName, gameId);
+                    return (false, "There is no game with the specified game ID.");
+                }
+
+                Player? player = matchingGame.Players.FirstOrDefault(player => player.Name == playerName);
+
+                if (player == null)
+                {
+                    logger.LogWarning("{PlayerName} tried play a card, but the player did not exist in the game {GameId}", playerName, gameId);
+                    return (false, "There is no player in the game with that name.");
+                }
+
+                if (player.FinishedTurn)
+                {
+                    logger.LogWarning("{PlayerName} in {GameId} tried play a second time on their turn", playerName, gameId);
+                    return (false, "Player already went this turn.");
+                }
+
+                Card? card1 = TryGetCard(player, indexOfCardInHand);
+
+                if (card1 == null)
+                {
+                    return (false, "Requested card index is out of bounds.");
+                }
+
+                Card? card2 = null;
+
+                if (indexOfSecondCardInHandUsingChopsticks != null)
+                {
+                    card2 = TryGetCard(player, indexOfCardInHand);
+
+                    if (card2 == null)
+                    {
+                        return (false, "Requested card index is out of bounds.");
+                    }
+                }
+
+                player.CardsInPlay.Add(card1);
+                player.CardsInHand.Remove(card1);
+                logger.LogInformation("{PlayerName} in {GameId} played {Card1}", playerName, gameId, card1);
+
+                if (card2 != null)
+                {
+                    player.CardsInPlay.Add(card2);
+                    player.CardsInHand.Remove(card2);
+                    logger.LogInformation("{PlayerName} in {GameId} played a second card {Card2}", playerName, gameId, card2);
+                }
+
+                player.FinishedTurn = true;
+
+                if (matchingGame.Players.All(player => player.FinishedTurn))
+                {
+                    foreach (Player p in matchingGame.Players)
+                    {
+                        p.FinishedTurn = false;
+                    }
+
+                    bool roundEnded = matchingGame.Players.Any(player => player.CardsInHand.Count == 0);
+
+                    if (roundEnded)
+                    {
+                        // todo go to gamestage waiting
+                    }
+                    else
+                    {
+                        RotatePlayerHands(matchingGame);
+                    }
+
+                    GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));
+                }
+
+                return (true, "");
+            }
+        }
 
         #endregion
 
@@ -224,7 +312,7 @@ namespace SooshEgoServer.Services
             return new GameId(result.ToString());
         }
 
-        private void DistributeCardsToPlayers(Game game)
+        private void DistributeCardsFromDeck(Game game)
         {
             var numberOfCardsInStartingHand = game.Players.Count switch
             {
@@ -258,6 +346,31 @@ namespace SooshEgoServer.Services
             }
 
             playerDrawingCard.CardsInHand.Add(drawnCard);
+        }
+
+        private Card? TryGetCard(Player player, int index)
+        {
+            if (index < 0 || index >= player.CardsInHand.Count)
+            {
+                logger.LogWarning("{PlayerName} tried to play a card at index {Index}, but their hand has only {Count} cards",
+                    player.Name, index, player.CardsInHand.Count);
+
+                return null;
+            }
+
+            return player.CardsInHand[index];
+        }
+
+        private static void RotatePlayerHands(Game game)
+        {
+            List<Card> lastPlayerHand = game.Players[^1].CardsInHand;
+
+            for (int i = game.Players.Count - 1; i > 0; i--)
+            {
+                game.Players[i].CardsInHand = game.Players[i - 1].CardsInHand;
+            }
+
+            game.Players[0].CardsInHand = lastPlayerHand;
         }
     }
 }
