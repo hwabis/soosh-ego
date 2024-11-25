@@ -11,7 +11,7 @@ namespace SooshEgoServer.Models
         public List<Card> CardsInHand { get; set; } = [];
 
         [JsonPropertyName("cardsInPlay")]
-        public List<Card> CardsInPlay { get; init; } = [];
+        public List<Card> CardsInPlay { get; set; } = [];
 
         [JsonPropertyName("finishedTurn")]
         public bool FinishedTurn { get; set; } = false;
@@ -19,11 +19,15 @@ namespace SooshEgoServer.Models
         [JsonPropertyName("pointsAtEndOfPreviousRound")]
         public int PointsAtEndOfPreviousRound { get; set; } = 0;
 
-        // todo someone could technically get the game state to send before everyone has made their move by reconnecting.
-        // make a field ignored by the json to track the player's "queued move" or something
-
         [JsonPropertyName("connectionId")]
         public string? ConnectionId { get; set; }
+
+        /// <summary>
+        /// Serves as a buffer when moving a card from hand to in-play, so that the move is not immediately revealed to all players
+        /// until everybody has made their move. So this only ever has at most 2 cards (1 on a normal play, 2 for chopsticks).
+        /// </summary>
+        [JsonIgnore]
+        public List<Card> EnqueuedCardsToPlay { get; set; } = [];
     }
 
     public record PlayerName(string Value);

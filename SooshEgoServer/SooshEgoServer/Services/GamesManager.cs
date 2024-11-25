@@ -270,13 +270,13 @@ namespace SooshEgoServer.Services
                     }
                 }
 
-                player.CardsInPlay.Add(card1);
+                player.EnqueuedCardsToPlay.Add(card1);
                 player.CardsInHand.Remove(card1);
                 logger.LogInformation("{PlayerName} in {GameId} played {Card1}", playerName, gameId, card1);
 
                 if (card2 != null)
                 {
-                    player.CardsInPlay.Add(card2);
+                    player.EnqueuedCardsToPlay.Add(card2);
                     player.CardsInHand.Remove(card2);
                     logger.LogInformation("{PlayerName} in {GameId} played a second card {Card2}", playerName, gameId, card2);
                 }
@@ -288,6 +288,8 @@ namespace SooshEgoServer.Services
                     foreach (Player p in matchingGame.Players)
                     {
                         p.FinishedTurn = false;
+                        p.CardsInPlay.AddRange(p.EnqueuedCardsToPlay);
+                        p.EnqueuedCardsToPlay.Clear();
                     }
 
                     bool roundEnded = matchingGame.Players.Any(player => player.CardsInHand.Count == 0);
@@ -307,10 +309,9 @@ namespace SooshEgoServer.Services
                     {
                         RotatePlayerHands(matchingGame);
                     }
-
-                    GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));
                 }
 
+                GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));
                 return (true, "");
             }
         }
