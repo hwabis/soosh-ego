@@ -9,13 +9,14 @@ interface GameStatusProps {
 
 const GameStatus = ({ game, isPlayerHost, errorMessage, handleStartGame }: GameStatusProps) => {
   const isWaiting = game.gameStage === GameStage.Waiting;
+  const stageDescription = game.gameStage == GameStage.Playing ? `Round ${game.numberOfRoundsCompleted + 1}` : game.gameStage;
 
   return (
     <div>
       <div className="absolute top-4 left-4">
         <div className="bg-red-900 rounded w-52 p-4">
           <p className="block font-medium text-white">Game ID: {game.gameId.value}</p>
-          <p className="block font-medium text-white">Stage: {game.gameStage}</p>
+          <p className="block font-medium text-white">Stage: {stageDescription}</p>
           {isPlayerHost && isWaiting && (
             <button
               className="w-full text-white rounded p-2 my-2 bg-green-600 hover:bg-green-700"

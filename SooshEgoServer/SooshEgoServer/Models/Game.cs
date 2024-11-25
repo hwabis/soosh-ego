@@ -12,7 +12,7 @@ namespace SooshEgoServer.Models
         public GameStage GameStage { get; set; } = GameStage.Waiting;
 
         [JsonPropertyName("numberOfRoundsCompleted")]
-        public int NumberOfRoundsCompleted = 0;
+        public int NumberOfRoundsCompleted { get; set; } = 0;
 
         [JsonPropertyName("players")]
         public List<Player> Players { get; init; } = [];
