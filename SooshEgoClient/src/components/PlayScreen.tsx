@@ -5,7 +5,7 @@ import { HubConnection } from "@microsoft/signalr";
 import { Game, GameStage } from "../models/Models";
 import GameStatus from "./GameStatus";
 import PlayerBox from "./PlayerBox";
-import { startGame } from "../services/GameLobbyApiService";
+import { startGame } from "../services/ApiService";
 
 const PlayScreen = () => {
   const [searchParams] = useSearchParams();
@@ -14,7 +14,8 @@ const PlayScreen = () => {
 
   const [game, setGame] = useState<Game>({
     gameId: { value: "" },
-    gameStage: GameStage.Lobby,
+    gameStage: GameStage.Waiting,
+    numberOfRoundsCompleted: 0,
     players: [],
   });
   const connectionRef = useRef<HubConnection | null>(null);

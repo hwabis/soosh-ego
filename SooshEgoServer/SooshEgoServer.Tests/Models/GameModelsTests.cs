@@ -11,7 +11,7 @@ namespace SooshEgoServer.Tests.Models
         {
             Game game = new(new("summoners rift"))
             {
-                GameStage = GameStage.Round1
+                GameStage = GameStage.Playing
             };
 
             Player gragas = new(new("gragas"));
@@ -31,7 +31,7 @@ namespace SooshEgoServer.Tests.Models
             Assert.NotNull(deserializedGame);
 
             Assert.True(deserializedGame.GameId.Value == "summoners rift");
-            Assert.True(deserializedGame.GameStage == GameStage.Round1);
+            Assert.True(deserializedGame.GameStage == GameStage.Playing);
 
             Assert.True(deserializedGame.Players[0].Name.Value == "gragas");
             Assert.Null(deserializedGame.Players[0].ConnectionId);

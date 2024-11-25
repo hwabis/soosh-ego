@@ -129,7 +129,7 @@ namespace SooshEgoServer.Tests.Services
             gamesManager.AddPlayerToGame(gameId, new("player2"));
             (success, string _) = gamesManager.StartGame(gameId);
             Assert.True(success);
-            Assert.True(gamesManager.GetGameState(gameId).game!.GameStage == GameStage.Round1);
+            Assert.True(gamesManager.GetGameState(gameId).game!.GameStage == GameStage.Playing);
 
             foreach (Player player in gamesManager.GetGameState(gameId).game!.Players)
             {

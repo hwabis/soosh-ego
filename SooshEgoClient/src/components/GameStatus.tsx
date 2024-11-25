@@ -8,7 +8,7 @@ interface GameStatusProps {
 }
 
 const GameStatus = ({ game, isPlayerHost, errorMessage, handleStartGame }: GameStatusProps) => {
-  const isInLobby = game.gameStage === GameStage.Lobby;
+  const isWaiting = game.gameStage === GameStage.Waiting;
 
   return (
     <div>
@@ -16,7 +16,7 @@ const GameStatus = ({ game, isPlayerHost, errorMessage, handleStartGame }: GameS
         <div className="bg-red-900 rounded w-52 p-4">
           <p className="block font-medium text-white">Game ID: {game.gameId.value}</p>
           <p className="block font-medium text-white">Stage: {game.gameStage}</p>
-          {isPlayerHost && isInLobby && (
+          {isPlayerHost && isWaiting && (
             <button
               className="w-full text-white rounded p-2 my-2 bg-green-600 hover:bg-green-700"
               onClick={handleStartGame}
@@ -24,7 +24,7 @@ const GameStatus = ({ game, isPlayerHost, errorMessage, handleStartGame }: GameS
               Start game!
             </button>
           )}
-          {!isPlayerHost && isInLobby && (
+          {!isPlayerHost && isWaiting && (
             <p className="block text-white my-2">Waiting for the host to start the game...</p>
           )}
         </div>

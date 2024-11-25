@@ -3,6 +3,7 @@
 export interface Game {
     gameId: GameId;
     gameStage: GameStage;
+    numberOfRoundsCompleted: number;
     players: Player[];
 }
 
@@ -11,10 +12,8 @@ export interface GameId {
 }
 
 export enum GameStage {
-    Lobby = "Lobby",
-    Round1 = "Round1",
-    Round2 = "Round2",
-    Round3 = "Round3",
+    Waiting = "Waiting",
+    Playing = "Playing",
     Finished = "Finished",
 }
 

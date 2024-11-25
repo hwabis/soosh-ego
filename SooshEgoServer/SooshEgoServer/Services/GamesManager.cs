@@ -9,6 +9,8 @@ namespace SooshEgoServer.Services
         private const int gameIdLength = 6;
         private const int gamePlayerLimit = 5;
 
+        private const int maxNumberOfRounds = 3;
+
         private readonly object gamesLock = new(); // todo revisit if i'm over-locking
 
         public event EventHandler<GameStateUpdatedEventArgs>? GameStateUpdated;
@@ -141,7 +143,7 @@ namespace SooshEgoServer.Services
                     return (false, "There is no game with the specified game ID.");
                 }
 
-                if (matchingGame.GameStage != GameStage.Lobby)
+                if (matchingGame.GameStage != GameStage.Waiting || matchingGame.NumberOfRoundsCompleted > 0)
                 {
                     return (false, "The game has already started.");
                 }
@@ -178,7 +180,7 @@ namespace SooshEgoServer.Services
                     return (false, "There is no game with the specified game ID.");
                 }
 
-                if (matchingGame.GameStage != GameStage.Lobby)
+                if (matchingGame.GameStage != GameStage.Waiting || matchingGame.NumberOfRoundsCompleted > 0)
                 {
                     return (false, "The game is already in-progress.");
                 }
@@ -188,7 +190,7 @@ namespace SooshEgoServer.Services
                     return (false, "Requires at least two players to start.");
                 }
 
-                matchingGame.GameStage = GameStage.Round1;
+                matchingGame.GameStage = GameStage.Playing;
 
                 DistributeCardsFromDeck(matchingGame);
 
@@ -282,7 +284,14 @@ namespace SooshEgoServer.Services
 
                     if (roundEnded)
                     {
-                        // todo go to gamestage waiting
+                        matchingGame.GameStage = GameStage.Waiting;
+                        matchingGame.NumberOfRoundsCompleted++;
+
+                        if (matchingGame.NumberOfRoundsCompleted == maxNumberOfRounds)
+                        {
+                            matchingGame.GameStage = GameStage.Finished;
+                            // todo save the game or something like op.gg ?
+                        }
                     }
                     else
                     {

@@ -46,7 +46,7 @@ namespace SooshEgoServer.Tests.Services
             (bool success1, string _) = gamesManager.PlayCard(gameId, new("player1"), 4, null);
             Assert.True(success1);
 
-            List<Card> oldPlayer1Cards = gamesManager.GetGameState(gameId).game!.Players[0].CardsInHand.ToList();
+            List<Card> oldPlayer1Cards = [.. gamesManager.GetGameState(gameId).game!.Players[0].CardsInHand];
 
             (bool success2, string _) = gamesManager.PlayCard(gameId, new("player2"), 5, null);
             Assert.True(success2);
@@ -78,12 +78,6 @@ namespace SooshEgoServer.Tests.Services
             gamesManager.GetGameState(gameId).game!.Players[0].CardsInPlay.Add(new Card(CardType.Chopsticks));
             (bool success2, string _) = gamesManager.PlayCard(gameId, new("player1"), 4, 5);
             Assert.True(success2);
-        }
-
-        [Fact]
-        public void PlayCard_RoundComplete()
-        {
-            // todo
         }
     }
 }

@@ -8,7 +8,7 @@ interface PlayerBoxProps {
 
 const PlayerBox = ({ player, isLocalPlayer, gameStage }: PlayerBoxProps) => {
   const getTurnStatus = () => {
-    if (gameStage === GameStage.Lobby || gameStage === GameStage.Finished) {
+    if (gameStage !== GameStage.Playing) {
       return null;
     }
     return player.finishedTurn ? "Card chosen!" : "Choosing a card...";
