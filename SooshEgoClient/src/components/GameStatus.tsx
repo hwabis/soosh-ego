@@ -19,6 +19,9 @@ const GameStatus = ({ game, isPlayerHost, errorMessage, handleStartGame }: GameS
   const copyGameIdToClipboard = () => {
     navigator.clipboard.writeText(game.gameId.value);
     setCopyButtonText("Copied!");
+    setTimeout(() => {
+      setCopyButtonText("Copy game ID");
+    }, 2000);
   };
 
   return (
