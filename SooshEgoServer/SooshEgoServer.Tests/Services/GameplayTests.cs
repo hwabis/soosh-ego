@@ -63,25 +63,40 @@ namespace SooshEgoServer.Tests.Services
             }
         }
 
+        // todo chopsticks can play 2
+
+        // todo scoring
+
         [Fact]
-        public void PlayCard_TwoCardsRequiresChopsticks()
+        public void StartGame_NewRound_NewGame()
         {
             (bool _, GameId? gameId, _) = gamesManager.CreateAndAddPlayerToGame(new("player1"));
             Assert.NotNull(gameId);
 
             gamesManager.AddPlayerToGame(gameId, new("player2"));
-            gamesManager.StartGame(gameId);
 
-            (bool success1, string _) = gamesManager.PlayCard(gameId, new("player1"), 4, 5);
-            Assert.False(success1);
+            for (int i = 0; i < 3; i++)
+            {
+                (bool success, string _) = gamesManager.StartGame(gameId);
+                Assert.True(success);
 
-            gamesManager.GetGameState(gameId).game!.Players[0].CardsInPlay.Add(new Card(CardType.Chopsticks));
-            (bool success2, string _) = gamesManager.PlayCard(gameId, new("player1"), 4, 5);
+                int startingHandSize = gamesManager.GetGameState(gameId).game!.Players[0].CardsInHand.Count;
+
+                for (int j = 0; j < startingHandSize; j++)
+                {
+                    foreach (Player player in gamesManager.GetGameState(gameId).game!.Players)
+                    {
+                        (bool success1, string _) = gamesManager.PlayCard(gameId, player.Name, 0, null);
+                        Assert.True(success1);
+                    }
+                }
+
+                Assert.True(gamesManager.GetGameState(gameId).game!.NumberOfRoundsCompleted == i + 1);
+            }
+
+            (bool success2, string _) = gamesManager.StartGame(gameId);
             Assert.True(success2);
+            Assert.True(gamesManager.GetGameState(gameId).game!.NumberOfRoundsCompleted == 0);
         }
-
-        // todo play to end of round
-
-        // todo play to end of 3 rounds
     }
 }
