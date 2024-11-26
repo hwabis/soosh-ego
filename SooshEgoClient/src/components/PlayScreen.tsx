@@ -5,7 +5,8 @@ import { HubConnection } from "@microsoft/signalr";
 import { Game, GameStage } from "../models/Models";
 import GameStatus from "./GameStatus";
 import PlayerBox from "./PlayerBox";
-import { startGame } from "../services/ApiService";
+import { playCard, startGame } from "../services/ApiService";
+import CardSelection from "./CardSelection";
 
 const PlayScreen = () => {
   const [searchParams] = useSearchParams();
@@ -22,6 +23,8 @@ const PlayScreen = () => {
   const isConnectingRef = useRef(false);
 
   const [errorMessage, setErrorMessage] = useState<string>('');
+
+  const localPlayer = game.players.find((p) => p.name.value === playerName);
 
   useEffect(() => {
     if (!gameId || !playerName) {
@@ -76,6 +79,20 @@ const PlayScreen = () => {
     }
   }
 
+  const handlePlayCard = async (selectedIndices: number[]) => {
+    if (selectedIndices.length === 0) {
+      return;
+    }
+
+    const [card1Index, card2Index] = selectedIndices;
+
+    const success = await playCard(gameId, playerName, card1Index, card2Index ?? null,
+      (error: string) => setErrorMessage(error));
+    if (success) {
+      setErrorMessage("");
+    }
+  };
+
   return (
     <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
       <GameStatus
@@ -94,6 +111,15 @@ const PlayScreen = () => {
           />
         ))}
       </div>
+      {localPlayer && (
+        <div className="absolute bottom-4 left-0 right-0">
+          <CardSelection
+            cards={localPlayer.cardsInHand}
+            selectionLimit={1} // todo chopsticks
+            onConfirm={handlePlayCard}
+          />
+        </div>
+      )}
     </div>
   );
 }

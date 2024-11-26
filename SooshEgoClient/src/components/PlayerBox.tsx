@@ -15,12 +15,12 @@ const PlayerBox = ({ player, isLocalPlayer, gameStage }: PlayerBoxProps) => {
   };
 
   return (
-    <div className={`bg-white border-2 ${isLocalPlayer ? "border-green-600" : "border-red-900"} p-4 w-60 rounded`}>
+    <div className={`bg-white border-2 ${isLocalPlayer ? "border-green-600" : "border-red-900"} p-4 w-56 rounded`}>
       <p className="block text-lg font-bold">
         {isLocalPlayer ? `${player.name.value} (You)` : player.name.value}
       </p>
       <p className="block font-medium">
-        {player.connectionId ? "[Connected]" : "[Disconnected]"}
+        {!player.connectionId && "[Disconnected]"}
       </p>
       <p className="block font-medium">
         {getTurnStatus()}

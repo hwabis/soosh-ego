@@ -150,11 +150,6 @@ namespace SooshEgoServer.Services
 
                 if (matchingGame.Players.Count >= gamePlayerLimit)
                 {
-                    if (matchingGame.Players.Count > gamePlayerLimit)
-                    {
-                        throw new Exception($"There were more than {gamePlayerLimit} players in {gameId}");
-                    }
-
                     return (false, "The game's lobby is full.");
                 }
 
