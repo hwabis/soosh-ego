@@ -175,7 +175,8 @@ namespace SooshEgoServer.Services
                     return (false, "There is no game with the specified game ID.");
                 }
 
-                if (matchingGame.GameStage != GameStage.Waiting || matchingGame.NumberOfRoundsCompleted > 0)
+                if (!(matchingGame.GameStage == GameStage.Waiting && matchingGame.NumberOfRoundsCompleted == 0) &&
+                    !(matchingGame.GameStage == GameStage.Finished && matchingGame.NumberOfRoundsCompleted == maxNumberOfRounds))
                 {
                     return (false, "The game is already in-progress.");
                 }
@@ -185,18 +186,16 @@ namespace SooshEgoServer.Services
                     return (false, "Requires at least two players to start.");
                 }
 
-                matchingGame.GameStage = GameStage.Playing;
-
-                foreach (Player player in matchingGame.Players)
+                if (matchingGame.GameStage == GameStage.Waiting)
                 {
-                    player.CardsInHand.RemoveAll(card => card.CardType != CardType.Pudding);
-
-                    if (player.CardsInHand.Count > 0)
-                    {
-                        logger.LogError("{PlayerName} in {GameId} did not have an empty hand at the start of the round", player.Name, gameId);
-                    }
+                    ResetRound(matchingGame);
+                }
+                else if (matchingGame.GameStage == GameStage.Finished)
+                {
+                    ResetGame(matchingGame);
                 }
 
+                matchingGame.GameStage = GameStage.Playing;
                 DistributeCardsFromDeck(matchingGame);
 
                 logger.LogInformation("{GameId} has started round {Round}", gameId, matchingGame.NumberOfRoundsCompleted + 1);
@@ -330,6 +329,36 @@ namespace SooshEgoServer.Services
             } while (games.ContainsKey(new(result.ToString())));
 
             return new GameId(result.ToString());
+        }
+
+        private void ResetRound(Game game)
+        {
+            foreach (Player player in game.Players)
+            {
+                player.CardsInPlay.RemoveAll(card => card.CardType != CardType.Pudding);
+                player.CardsInHand.Clear();
+
+                if (player.CardsInHand.Count > 0)
+                {
+                    logger.LogError("{PlayerName} in {GameId} did not have an empty hand at the start of the round", player.Name, game.GameId);
+                }
+            }
+        }
+
+        private void ResetGame(Game game)
+        {
+            foreach (Player player in game.Players)
+            {
+                player.CardsInPlay.Clear();
+                player.CardsInHand.Clear();
+                player.PointsAtEndOfPreviousRound = 0;
+                game.ResetDeck();
+
+                if (player.CardsInHand.Count > 0)
+                {
+                    logger.LogError("{PlayerName} in {GameId} did not have an empty hand at the start of the round", player.Name, game.GameId);
+                }
+            }
         }
 
         private void DistributeCardsFromDeck(Game game)

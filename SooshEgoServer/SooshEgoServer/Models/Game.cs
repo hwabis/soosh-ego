@@ -24,11 +24,13 @@ namespace SooshEgoServer.Models
         {
             GameId = gameId;
 
-            InitializeDeck();
+            ResetDeck();
         }
 
-        private void InitializeDeck()
+        public void ResetDeck()
         {
+            Deck.Clear();
+
             for (int i = 0; i < 14; i++)
             {
                 Deck.Push(new Card(CardType.Tempura));

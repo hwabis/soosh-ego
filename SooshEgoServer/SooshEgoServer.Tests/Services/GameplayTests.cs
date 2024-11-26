@@ -79,5 +79,9 @@ namespace SooshEgoServer.Tests.Services
             (bool success2, string _) = gamesManager.PlayCard(gameId, new("player1"), 4, 5);
             Assert.True(success2);
         }
+
+        // todo play to end of round
+
+        // todo play to end of 3 rounds
     }
 }
