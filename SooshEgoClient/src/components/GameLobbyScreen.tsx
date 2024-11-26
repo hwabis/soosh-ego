@@ -29,8 +29,14 @@ const GameLobbyScreen = () => {
       <div className="p-6 bg-red-900 rounded space-y-4">
         <p className="text-lg font-bold text-white">Sushi Go!</p>
         <div className="space-y-2">
-          <label className="block font-medium text-white">Your name:</label>
+          <label
+            htmlFor="name-input"
+            className="block font-medium text-white"
+          >
+            Your name:
+          </label>
           <input
+            id="name-input"
             type="text"
             value={playerName}
             onChange={e => setPlayerName(e.target.value)}
@@ -44,8 +50,14 @@ const GameLobbyScreen = () => {
           </button>
         </div>
         <div className="space-y-2">
-          <label className="block font-medium text-white">Game ID:</label>
+          <label
+            htmlFor="game-id-input"
+            className="block font-medium text-white"
+          >
+            Game ID:
+          </label>
           <input
+            id="game-id-input"
             type="text"
             value={enteredGameId}
             onChange={e => setEnteredGameId(e.target.value)}

@@ -200,6 +200,7 @@ namespace SooshEgoServer.Services
 
                 logger.LogInformation("{GameId} has started round {Round}", gameId, matchingGame.NumberOfRoundsCompleted + 1);
 
+                // todo save game
                 GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));
                 return (true, "");
             }
@@ -296,8 +297,9 @@ namespace SooshEgoServer.Services
                         if (matchingGame.NumberOfRoundsCompleted == maxNumberOfRounds)
                         {
                             matchingGame.GameStage = GameStage.Finished;
-                            // todo save the game or something like op.gg ?
                         }
+
+                        // todo update the saved game round count
                     }
                     else
                     {

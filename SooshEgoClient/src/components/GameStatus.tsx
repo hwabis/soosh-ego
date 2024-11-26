@@ -9,7 +9,7 @@ interface GameStatusProps {
 
 const GameStatus = ({ game, isPlayerHost, errorMessage, handleStartGame }: GameStatusProps) => {
   const isWaiting = game.gameStage === GameStage.Waiting;
-  const stageDescription = game.gameStage == GameStage.Playing ? `Round ${game.numberOfRoundsCompleted + 1}` : game.gameStage;
+  const stageDescription = game.gameStage == GameStage.Playing ? `Round ${game.numberOfRoundsCompleted + 1} / 3` : game.gameStage;
 
   return (
     <div>
