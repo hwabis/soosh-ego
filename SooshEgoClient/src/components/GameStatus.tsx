@@ -12,9 +12,17 @@ const GameStatus = ({ game, isPlayerHost, errorMessage, handleStartGame }: GameS
   const [copyButtonText, setCopyButtonText] = useState<string>("Copy game ID");
 
   const isGameStartable = game.gameStage !== GameStage.Playing;
-  const stageDescription = game.gameStage === GameStage.Playing
-    ? `Round ${game.numberOfRoundsCompleted + 1} / 3`
-    : game.gameStage;
+  const isGameJoinable = isGameStartable && game.numberOfRoundsCompleted === 0;
+  const stageDescription = (() => {
+    switch (game.gameStage) {
+      case GameStage.Playing:
+        return `Round ${game.numberOfRoundsCompleted + 1} / 3`;
+      case GameStage.Waiting:
+        return `Waiting for round ${game.numberOfRoundsCompleted + 1}`;
+      default:
+        return game.gameStage;
+    }
+  })();
 
   const copyGameIdToClipboard = () => {
     navigator.clipboard.writeText(game.gameId.value);
@@ -30,7 +38,7 @@ const GameStatus = ({ game, isPlayerHost, errorMessage, handleStartGame }: GameS
         <div className="bg-red-900 rounded w-52 p-4">
           <p className="block font-medium text-white">Game ID: {game.gameId.value}</p>
           {
-            isGameStartable && (
+            isGameJoinable && (
               <button
                 className="block w-full text-white rounded p-2 my-2 bg-orange-600 hover:bg-orange-700"
                 onClick={copyGameIdToClipboard}
@@ -38,7 +46,7 @@ const GameStatus = ({ game, isPlayerHost, errorMessage, handleStartGame }: GameS
                 {copyButtonText}
               </button>)
           }
-          <p className="block font-medium text-white">Stage: {stageDescription}</p>
+          <p className="block font-medium text-white">{stageDescription}</p>
           {isPlayerHost && isGameStartable && (
             <button
               className="w-full text-white rounded p-2 my-2 bg-green-600 hover:bg-green-700"
