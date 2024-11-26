@@ -175,8 +175,7 @@ namespace SooshEgoServer.Services
                     return (false, "There is no game with the specified game ID.");
                 }
 
-                if (!(matchingGame.GameStage == GameStage.Waiting && matchingGame.NumberOfRoundsCompleted == 0) &&
-                    !(matchingGame.GameStage == GameStage.Finished && matchingGame.NumberOfRoundsCompleted == maxNumberOfRounds))
+                if (matchingGame.GameStage == GameStage.Playing)
                 {
                     return (false, "The game is already in-progress.");
                 }
