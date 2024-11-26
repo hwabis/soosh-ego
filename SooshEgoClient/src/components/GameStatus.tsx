@@ -23,6 +23,16 @@ const GameStatus = ({ game, isPlayerHost, errorMessage, handleStartGame }: GameS
         return game.gameStage;
     }
   })();
+  const startButtonText = (() => {
+    switch (game.gameStage) {
+      case GameStage.Waiting:
+        return "Start the next round!";
+      case GameStage.Finished:
+        return "Start a new game!";
+      default:
+        return "";
+    }
+  })();
 
   const copyGameIdToClipboard = () => {
     navigator.clipboard.writeText(game.gameId.value);
@@ -52,10 +62,10 @@ const GameStatus = ({ game, isPlayerHost, errorMessage, handleStartGame }: GameS
               className="w-full text-white rounded p-2 my-2 bg-green-600 hover:bg-green-700"
               onClick={handleStartGame}
             >
-              Start game!
+              {startButtonText}
             </button>
           )}
-          {!isPlayerHost && isGameStartable && (
+          {!isPlayerHost && game.gameStage === GameStage.Waiting && (
             <p className="block text-white my-2">Waiting for the host to start the game...</p>
           )}
         </div>

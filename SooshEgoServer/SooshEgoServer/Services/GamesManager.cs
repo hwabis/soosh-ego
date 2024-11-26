@@ -293,7 +293,9 @@ namespace SooshEgoServer.Services
                         matchingGame.GameStage = GameStage.Waiting;
                         matchingGame.NumberOfRoundsCompleted++;
 
-                        if (matchingGame.NumberOfRoundsCompleted == maxNumberOfRounds)
+                        bool gameEnded = matchingGame.NumberOfRoundsCompleted == maxNumberOfRounds;
+
+                        if (gameEnded)
                         {
                             matchingGame.GameStage = GameStage.Finished;
                         }
@@ -348,12 +350,14 @@ namespace SooshEgoServer.Services
 
         private void ResetGame(Game game)
         {
+            game.NumberOfRoundsCompleted = 0;
+            game.ResetDeck();
+
             foreach (Player player in game.Players)
             {
                 player.CardsInPlay.Clear();
                 player.CardsInHand.Clear();
                 player.PointsAtEndOfPreviousRound = 0;
-                game.ResetDeck();
 
                 if (player.CardsInHand.Count > 0)
                 {
