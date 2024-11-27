@@ -9,16 +9,16 @@ namespace SooshEgoServer.Models
 
         [JsonPropertyName("gameStage")]
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public GameStage GameStage { get; set; } = GameStage.Waiting;
+        public GameStage GameStage { get; private set; } = GameStage.Waiting;
 
         [JsonPropertyName("numberOfRoundsCompleted")]
-        public int NumberOfRoundsCompleted { get; set; } = 0;
+        public int NumberOfRoundsCompleted { get; private set; } = 0;
 
         [JsonPropertyName("players")]
-        public List<Player> Players { get; init; } = [];
+        public List<Player> Players { get; private set; } = [];
 
         [JsonPropertyName("winnerName")]
-        public string? WinnerName { get; set; } = null;
+        public string? WinnerName { get; private set; } = null;
 
         [JsonIgnore]
         public Stack<Card> Deck { get; private set; } = [];
@@ -30,7 +30,74 @@ namespace SooshEgoServer.Models
             ResetDeck();
         }
 
-        public void ResetDeck()
+        public void StartNewGame()
+        {
+            GameStage = GameStage.Playing;
+            NumberOfRoundsCompleted = 0;
+            WinnerName = null;
+
+            ResetDeck();
+
+            foreach (Player player in Players)
+            {
+                player.CardsInPlay.Clear();
+                player.CardsInHand.Clear();
+                player.PointsAtEndOfPreviousRound = 0;
+            }
+
+            DistributeCardsFromDeckToPlayers();
+        }
+
+        /// <summary>
+        /// Do not call for the first round of the game; only call <see cref="StartNewGame"/> instead.
+        /// </summary>
+        public void StartNewRound()
+        {
+            GameStage = GameStage.Playing;
+            WinnerName = null;
+
+            foreach (Player player in Players)
+            {
+                player.CardsInPlay.RemoveAll(card => card.CardType != CardType.Pudding);
+                player.CardsInHand.Clear();
+            }
+
+            DistributeCardsFromDeckToPlayers();
+        }
+
+        public void OnGameEnd()
+        {
+            GameStage = GameStage.Finished;
+            WinnerName = Players.MaxBy(player => player.PointsAtEndOfPreviousRound)?.Name.Value; // todo Add tiebreaker logic
+        }
+
+        /// <summary>
+        /// Needs to always be called on the end of a round, even after the last round of the game.
+        /// </summary>
+        public void OnRoundEnd()
+        {
+            GameStage = GameStage.Waiting;
+            NumberOfRoundsCompleted++;
+
+            // todo calculate points
+        }
+
+        /// <summary>
+        /// Needs to always be called on the end of a turn, even after the last turn of a round.
+        /// </summary>
+        public void OnTurnEnd()
+        {
+            foreach (Player player in Players)
+            {
+                player.FinishedTurn = false;
+                player.CardsInPlay.AddRange(player.EnqueuedCardsToPlay);
+                player.EnqueuedCardsToPlay.Clear();
+            }
+
+            RotatePlayerHands();
+        }
+
+        private void ResetDeck()
         {
             Deck.Clear();
 
@@ -93,6 +160,52 @@ namespace SooshEgoServer.Models
             {
                 Deck.Push(card);
             }
+        }
+
+        private void DistributeCardsFromDeckToPlayers()
+        {
+            int numberOfCardsInStartingHand = Players.Count switch
+            {
+                2 => 10,
+                3 => 9,
+                4 => 8,
+                5 => 7,
+                _ => throw new Exception("Started a game with an invalid number of players."),
+            };
+
+            foreach (Player player in Players)
+            {
+                for (int i = 0; i < numberOfCardsInStartingHand; i++)
+                {
+                    DrawCard(player);
+                }
+            }
+
+            return;
+        }
+
+        private void DrawCard(Player playerDrawingCard)
+        {
+            if (!Deck.TryPop(out Card? drawnCard))
+            {
+                return;
+            }
+
+            playerDrawingCard.CardsInHand.Add(drawnCard);
+
+            return;
+        }
+
+        private void RotatePlayerHands()
+        {
+            List<Card> lastPlayerHand = Players[^1].CardsInHand;
+
+            for (int i = Players.Count - 1; i > 0; i--)
+            {
+                Players[i].CardsInHand = Players[i - 1].CardsInHand;
+            }
+
+            Players[0].CardsInHand = lastPlayerHand;
         }
     }
 
