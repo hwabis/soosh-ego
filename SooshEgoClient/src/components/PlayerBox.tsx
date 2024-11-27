@@ -11,18 +11,18 @@ const PlayerBox = ({ player, isLocalPlayer, gameStage }: PlayerBoxProps) => {
     if (gameStage !== GameStage.Playing) {
       return null;
     }
-    return player.finishedTurn ? "Card chosen!" : "Choosing a card...";
+    return player.finishedThisTurn ? "Card chosen!" : "Choosing a card...";
   };
 
   return (
     <div className={`bg-white border-2 ${isLocalPlayer ? "border-green-600" : "border-red-900"} p-4 w-56 rounded`}>
-      <p className="block text-lg font-bold">
+      <p className=" text-lg font-bold">
         {isLocalPlayer ? `${player.name.value} (You)` : player.name.value}
       </p>
-      <p className="block font-medium">
+      <p className=" font-medium">
         {!player.connectionId && "[Disconnected]"}
       </p>
-      <p className="block font-medium">
+      <p className=" font-medium">
         {getTurnStatus()}
       </p>
       <div className="mt-2">

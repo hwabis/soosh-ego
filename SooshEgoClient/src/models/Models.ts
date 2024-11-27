@@ -22,7 +22,7 @@ export interface Player {
     name: PlayerName;
     cardsInHand: Card[];
     cardsInPlay: Card[];
-    finishedTurn: boolean;
+    finishedThisTurn: boolean;
     pointsAtEndOfPreviousRound: number;
     connectionId: string | null;
 }

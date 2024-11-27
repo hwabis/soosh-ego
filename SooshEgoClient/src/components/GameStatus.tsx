@@ -49,17 +49,17 @@ const GameStatus = ({ game, isPlayerHost, errorMessage, handleStartGame }: GameS
           {
             isGameJoinable && (
               <div>
-                <p className="block font-medium text-white">Game ID: {game.gameId.value}</p>
+                <p className=" font-medium text-white">Game ID: {game.gameId.value}</p>
 
                 <button
-                  className="block w-full text-white rounded p-2 my-2 bg-orange-600 hover:bg-orange-700"
+                  className="w-full text-white rounded p-2 my-2 bg-orange-600 hover:bg-orange-700"
                   onClick={copyGameIdToClipboard}
                 >
                   {copyButtonText}
                 </button>
               </div>)
           }
-          <p className="block font-medium text-white">{stageDescription}</p>
+          <p className=" font-medium text-white">{stageDescription}</p>
           {isPlayerHost && isGameStartable && (
             <button
               className="w-full text-white rounded p-2 my-2 bg-green-600 hover:bg-green-700"
@@ -69,10 +69,10 @@ const GameStatus = ({ game, isPlayerHost, errorMessage, handleStartGame }: GameS
             </button>
           )}
           {!isPlayerHost && game.gameStage === GameStage.Waiting && (
-            <p className="block text-white my-2">Waiting for the host to start the game...</p>
+            <p className=" text-white my-2">Waiting for the host to start the game...</p>
           )}
         </div>
-        <p className="block font-medium text-red-900 my-2">
+        <p className=" font-medium text-red-900 my-2">
           {errorMessage}
         </p>
       </div>
