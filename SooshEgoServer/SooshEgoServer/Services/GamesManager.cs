@@ -185,11 +185,11 @@ namespace SooshEgoServer.Services
                     return (false, "Requires at least two players to start.");
                 }
 
-                if (matchingGame.GameStage == GameStage.Waiting)
+                if (matchingGame.GameStage == GameStage.Waiting && matchingGame.NumberOfRoundsCompleted > 0)
                 {
                     ResetRound(matchingGame);
                 }
-                else if (matchingGame.GameStage == GameStage.Finished)
+                else
                 {
                     ResetGame(matchingGame);
                 }
@@ -200,7 +200,6 @@ namespace SooshEgoServer.Services
 
                 logger.LogInformation("{GameId} has started round {Round}", gameId, matchingGame.NumberOfRoundsCompleted + 1);
 
-                // todo save game
                 GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));
                 return (true, "");
             }
@@ -320,6 +319,8 @@ namespace SooshEgoServer.Services
 
         #endregion
 
+
+
         private GameId CreateNewGameId()
         {
             const string charSet = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -356,7 +357,7 @@ namespace SooshEgoServer.Services
         private void ResetGame(Game game)
         {
             game.NumberOfRoundsCompleted = 0;
-            game.ResetDeck();
+            ResetDeck(game);
 
             foreach (Player player in game.Players)
             {
@@ -368,6 +369,73 @@ namespace SooshEgoServer.Services
                 {
                     logger.LogError("{PlayerName} in {GameId} did not have an empty hand at the start of the round", player.Name, game.GameId);
                 }
+            }
+        }
+
+        private static void ResetDeck(Game game)
+        {
+            Stack<Card> deck = game.Deck;
+
+            deck.Clear();
+
+            for (int i = 0; i < 14; i++)
+            {
+                deck.Push(new Card(CardType.Tempura));
+                deck.Push(new Card(CardType.Sashimi));
+                deck.Push(new Card(CardType.Dumpling));
+            }
+
+            for (int i = 0; i < 12; i++)
+            {
+                deck.Push(new Card(CardType.MakiRoll2));
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                deck.Push(new Card(CardType.MakiRoll3));
+            }
+
+            for (int i = 0; i < 6; i++)
+            {
+                deck.Push(new Card(CardType.MakiRoll1));
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                deck.Push(new Card(CardType.SalmonNigiri));
+            }
+
+            for (int i = 0; i < 5; i++)
+            {
+                deck.Push(new Card(CardType.SquidNigiri));
+            }
+
+            for (int i = 0; i < 5; i++)
+            {
+                deck.Push(new Card(CardType.EggNigiri));
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                deck.Push(new Card(CardType.Pudding));
+            }
+
+            for (int i = 0; i < 6; i++)
+            {
+                deck.Push(new Card(CardType.Wasabi));
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+                deck.Push(new Card(CardType.Chopsticks));
+            }
+
+            Card[] cards = [.. deck];
+            deck.Clear();
+
+            foreach (Card card in cards.OrderBy(_ => Random.Shared.Next()))
+            {
+                deck.Push(card);
             }
         }
 
