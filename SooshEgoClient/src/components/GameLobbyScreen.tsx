@@ -78,7 +78,7 @@ const GameLobbyScreen = () => {
           </button>
         </div>
       </div>
-      <p className=" font-medium text-red-900 h-6 m-4">{errorMessage}</p>
+      <p className="font-medium text-red-900 h-6 m-4">{errorMessage}</p>
       <div className="absolute bottom-8 right-8">
         <a href="https://github.com/hwabis/soosh-ego" target="_blank" >
           <GithubIcon />
