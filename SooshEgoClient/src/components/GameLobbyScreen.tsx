@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createGame, addPlayer } from '../services/ApiService';
+import GithubIcon from '../assets/github-mark.svg?react';
 
 const GameLobbyScreen = () => {
   const [playerName, setPlayerName] = useState('');
@@ -26,7 +27,7 @@ const GameLobbyScreen = () => {
   return (
     <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
       <div className="p-6 bg-red-900 rounded space-y-4">
-        <p className="text-lg font-bold text-white">Sushi Go!</p>
+        <p className="text-lg font-bold text-white">Soosh Ego!</p>
         <div className="space-y-2">
           <label
             htmlFor="name-input"
@@ -71,6 +72,11 @@ const GameLobbyScreen = () => {
         </div>
       </div>
       <p className="block font-medium text-red-900 h-6 m-4">{errorMessage}</p>
+      <div className="absolute bottom-8 right-8">
+        <a href="https://github.com/hwabis/soosh-ego" target="_blank" >
+          <GithubIcon />
+        </a>
+      </div>
     </div>
   );
 }
