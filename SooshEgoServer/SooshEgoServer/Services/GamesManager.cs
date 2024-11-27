@@ -319,8 +319,6 @@ namespace SooshEgoServer.Services
 
         #endregion
 
-
-
         private GameId CreateNewGameId()
         {
             const string charSet = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
