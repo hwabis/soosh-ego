@@ -28,6 +28,13 @@ const GameLobbyScreen = () => {
     <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
       <div className="p-6 bg-red-900 rounded space-y-4">
         <p className="text-lg font-bold text-white">Soosh Ego!</p>
+        <a
+          href="https://gamewright.com/pdfs/Rules/SushiGoTM-RULES.pdf"
+          target="_blank"
+          className="font-medium text-blue-200 dark:text-blue-100 hover:underline"
+        >
+          Rules
+        </a>
         <div className="space-y-2">
           <label
             htmlFor="name-input"
