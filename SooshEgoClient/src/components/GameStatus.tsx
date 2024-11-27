@@ -26,7 +26,7 @@ const GameStatus = ({ game, isPlayerHost, errorMessage, handleStartGame }: GameS
   const startButtonText = (() => {
     switch (game.gameStage) {
       case GameStage.Waiting:
-        return "Start the next round!";
+        return "Start round!";
       case GameStage.Finished:
         return "Start a new game!";
       default:
@@ -46,15 +46,18 @@ const GameStatus = ({ game, isPlayerHost, errorMessage, handleStartGame }: GameS
     <div>
       <div className="absolute top-4 left-4">
         <div className="bg-red-900 rounded w-52 p-4">
-          <p className="block font-medium text-white">Game ID: {game.gameId.value}</p>
           {
             isGameJoinable && (
-              <button
-                className="block w-full text-white rounded p-2 my-2 bg-orange-600 hover:bg-orange-700"
-                onClick={copyGameIdToClipboard}
-              >
-                {copyButtonText}
-              </button>)
+              <div>
+                <p className="block font-medium text-white">Game ID: {game.gameId.value}</p>
+
+                <button
+                  className="block w-full text-white rounded p-2 my-2 bg-orange-600 hover:bg-orange-700"
+                  onClick={copyGameIdToClipboard}
+                >
+                  {copyButtonText}
+                </button>
+              </div>)
           }
           <p className="block font-medium text-white">{stageDescription}</p>
           {isPlayerHost && isGameStartable && (
