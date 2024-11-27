@@ -187,15 +187,20 @@ namespace SooshEgoServer.Services
 
                 if (matchingGame.GameStage == GameStage.Waiting)
                 {
-                    matchingGame.StartNewRound();
+                    ResetRound(matchingGame);
                 }
                 else if (matchingGame.GameStage == GameStage.Finished)
                 {
-                    matchingGame.StartNewGame();
+                    ResetGame(matchingGame);
                 }
+
+                matchingGame.GameStage = GameStage.Playing;
+                matchingGame.WinnerName = null;
+                DistributeCardsFromDeckToPlayers(matchingGame);
 
                 logger.LogInformation("{GameId} has started round {Round}", gameId, matchingGame.NumberOfRoundsCompleted + 1);
 
+                // todo save game
                 GameStateUpdated?.Invoke(this, new GameStateUpdatedEventArgs(matchingGame));
                 return (true, "");
             }
@@ -275,16 +280,36 @@ namespace SooshEgoServer.Services
 
                 if (matchingGame.Players.All(player => player.FinishedTurn))
                 {
-                    matchingGame.OnTurnEnd();
-
-                    if (matchingGame.Players.Any(player => player.CardsInHand.Count == 0))
+                    foreach (Player p in matchingGame.Players)
                     {
-                        matchingGame.OnRoundEnd();
+                        p.FinishedTurn = false;
+                        p.CardsInPlay.AddRange(p.EnqueuedCardsToPlay);
+                        p.EnqueuedCardsToPlay.Clear();
+                    }
 
-                        if (matchingGame.NumberOfRoundsCompleted == maxNumberOfRounds)
+                    bool roundEnded = matchingGame.Players.Any(player => player.CardsInHand.Count == 0);
+
+                    if (roundEnded)
+                    {
+                        // todo calculate points
+
+                        matchingGame.GameStage = GameStage.Waiting;
+                        matchingGame.NumberOfRoundsCompleted++;
+
+                        bool gameEnded = matchingGame.NumberOfRoundsCompleted == maxNumberOfRounds;
+
+                        if (gameEnded)
                         {
-                            matchingGame.OnGameEnd();
+                            matchingGame.GameStage = GameStage.Finished;
+                            matchingGame.WinnerName = matchingGame.Players.MaxBy(
+                                player => player.PointsAtEndOfPreviousRound)?.Name.Value; // TODO: Add tiebreaker logic
                         }
+
+                        // todo update the saved game round count
+                    }
+                    else
+                    {
+                        RotatePlayerHands(matchingGame);
                     }
                 }
 
@@ -314,6 +339,74 @@ namespace SooshEgoServer.Services
             return new GameId(result.ToString());
         }
 
+        private void ResetRound(Game game)
+        {
+            foreach (Player player in game.Players)
+            {
+                player.CardsInPlay.RemoveAll(card => card.CardType != CardType.Pudding);
+                player.CardsInHand.Clear();
+
+                if (player.CardsInHand.Count > 0)
+                {
+                    logger.LogError("{PlayerName} in {GameId} did not have an empty hand at the start of the round", player.Name, game.GameId);
+                }
+            }
+        }
+
+        private void ResetGame(Game game)
+        {
+            game.NumberOfRoundsCompleted = 0;
+            game.ResetDeck();
+
+            foreach (Player player in game.Players)
+            {
+                player.CardsInPlay.Clear();
+                player.CardsInHand.Clear();
+                player.PointsAtEndOfPreviousRound = 0;
+
+                if (player.CardsInHand.Count > 0)
+                {
+                    logger.LogError("{PlayerName} in {GameId} did not have an empty hand at the start of the round", player.Name, game.GameId);
+                }
+            }
+        }
+
+        private void DistributeCardsFromDeckToPlayers(Game game)
+        {
+            var numberOfCardsInStartingHand = game.Players.Count switch
+            {
+                2 => 10,
+                3 => 9,
+                4 => 8,
+                5 => 7,
+                _ => throw new Exception("Started a game with an invalid number of players."),
+            };
+
+            foreach (Player player in game.Players)
+            {
+                for (int i = 0; i < numberOfCardsInStartingHand; i++)
+                {
+                    DrawCard(game, player);
+                }
+            }
+        }
+
+        private void DrawCard(Game game, Player playerDrawingCard)
+        {
+            if (!game.Players.Contains(playerDrawingCard))
+            {
+                throw new Exception("Player is not in the correct game.");
+            }
+
+            if (!game.Deck.TryPop(out Card? drawnCard))
+            {
+                logger.LogError("In game {GameId}, the deck is out of cards!", game.GameId);
+                return;
+            }
+
+            playerDrawingCard.CardsInHand.Add(drawnCard);
+        }
+
         private Card? TryGetCard(Player player, int index)
         {
             if (index < 0 || index >= player.CardsInHand.Count)
@@ -325,6 +418,18 @@ namespace SooshEgoServer.Services
             }
 
             return player.CardsInHand[index];
+        }
+
+        private static void RotatePlayerHands(Game game)
+        {
+            List<Card> lastPlayerHand = game.Players[^1].CardsInHand;
+
+            for (int i = game.Players.Count - 1; i > 0; i--)
+            {
+                game.Players[i].CardsInHand = game.Players[i - 1].CardsInHand;
+            }
+
+            game.Players[0].CardsInHand = lastPlayerHand;
         }
     }
 }
