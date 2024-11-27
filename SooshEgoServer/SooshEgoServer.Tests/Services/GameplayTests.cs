@@ -63,7 +63,20 @@ namespace SooshEgoServer.Tests.Services
             }
         }
 
-        // todo chopsticks can play 2
+        [Fact]
+        public void PlayCard_ShoudlAllow2WithChopsticks()
+        {
+            (bool _, GameId? gameId, _) = gamesManager.CreateAndAddPlayerToGame(new("player1"));
+            Assert.NotNull(gameId);
+
+            gamesManager.AddPlayerToGame(gameId, new("player2"));
+            gamesManager.StartGame(gameId);
+
+            gamesManager.GetGameState(gameId).game!.Players[0].CardsInPlay.Add(new(CardType.Chopsticks));
+
+            (bool success1, string _) = gamesManager.PlayCard(gameId, new("player1"), 8, 9);
+            Assert.True(success1);
+        }
 
         // todo scoring
 
