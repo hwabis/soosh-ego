@@ -302,10 +302,10 @@ namespace SooshEgoServer.Services
                         {
                             matchingGame.GameStage = GameStage.Finished;
                             matchingGame.WinnerName = matchingGame.Players.MaxBy(
-                                player => player.PointsAtEndOfPreviousRound)?.Name.Value; // TODO: Add tiebreaker logic
-                        }
+                                player => player.PointsAtEndOfPreviousRound)?.Name.Value; // todo add tiebreaker logic
 
-                        // todo update the saved game round count
+                            // todo save game
+                        }
                     }
                     else
                     {
