@@ -68,7 +68,7 @@ namespace SooshEgoServer.Tests.Services
         // todo scoring
 
         [Fact]
-        public void StartGame_NewRound_NewGame()
+        public void StartGame_ToRestartGame()
         {
             (bool _, GameId? gameId, _) = gamesManager.CreateAndAddPlayerToGame(new("player1"));
             Assert.NotNull(gameId);

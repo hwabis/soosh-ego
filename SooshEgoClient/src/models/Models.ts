@@ -5,6 +5,7 @@ export interface Game {
     gameStage: GameStage;
     numberOfRoundsCompleted: number;
     players: Player[];
+    winnerName: string | null;
 }
 
 export interface GameId {

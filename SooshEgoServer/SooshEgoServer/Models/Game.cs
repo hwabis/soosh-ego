@@ -17,6 +17,9 @@ namespace SooshEgoServer.Models
         [JsonPropertyName("players")]
         public List<Player> Players { get; init; } = [];
 
+        [JsonPropertyName("winnerName")]
+        public string? WinnerName { get; set; } = null;
+
         [JsonIgnore]
         public Stack<Card> Deck { get; private set; } = [];
 

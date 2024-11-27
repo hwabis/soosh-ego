@@ -18,6 +18,7 @@ const PlayScreen = () => {
     gameStage: GameStage.Waiting,
     numberOfRoundsCompleted: 0,
     players: [],
+    winnerName: null,
   });
   const connectionRef = useRef<HubConnection | null>(null);
   const isConnectingRef = useRef(false);
@@ -101,6 +102,9 @@ const PlayScreen = () => {
         errorMessage={errorMessage}
         handleStartGame={handleStartGame}
       />
+      {game.winnerName && (
+        <div className="font-bold text-lg my-8">{`The winner is ${game.winnerName}!`}</div>
+      )}
       <div className="flex flex-wrap justify-center items-center gap-4">
         {game.players.map(player => (
           <PlayerBox

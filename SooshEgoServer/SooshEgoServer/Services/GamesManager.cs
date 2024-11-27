@@ -195,7 +195,8 @@ namespace SooshEgoServer.Services
                 }
 
                 matchingGame.GameStage = GameStage.Playing;
-                DistributeCardsFromDeck(matchingGame);
+                matchingGame.WinnerName = null;
+                DistributeCardsFromDeckToPlayers(matchingGame);
 
                 logger.LogInformation("{GameId} has started round {Round}", gameId, matchingGame.NumberOfRoundsCompleted + 1);
 
@@ -290,6 +291,8 @@ namespace SooshEgoServer.Services
 
                     if (roundEnded)
                     {
+                        // todo calculate points
+
                         matchingGame.GameStage = GameStage.Waiting;
                         matchingGame.NumberOfRoundsCompleted++;
 
@@ -298,6 +301,8 @@ namespace SooshEgoServer.Services
                         if (gameEnded)
                         {
                             matchingGame.GameStage = GameStage.Finished;
+                            matchingGame.WinnerName = matchingGame.Players.MaxBy(
+                                player => player.PointsAtEndOfPreviousRound)?.Name.Value; // TODO: Add tiebreaker logic
                         }
 
                         // todo update the saved game round count
@@ -366,7 +371,7 @@ namespace SooshEgoServer.Services
             }
         }
 
-        private void DistributeCardsFromDeck(Game game)
+        private void DistributeCardsFromDeckToPlayers(Game game)
         {
             var numberOfCardsInStartingHand = game.Players.Count switch
             {
