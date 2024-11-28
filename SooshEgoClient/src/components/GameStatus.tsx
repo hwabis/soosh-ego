@@ -34,12 +34,16 @@ const GameStatus = ({ game, isPlayerHost, errorMessage, handleStartGame }: GameS
     }
   })();
 
-  const copyGameIdToClipboard = () => {
-    navigator.clipboard.writeText(game.gameId.value);
-    setCopyButtonText("Copied!");
-    setTimeout(() => {
-      setCopyButtonText("Copy game ID");
-    }, 2000);
+  const copyGameIdToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(game.gameId.value);
+      setCopyButtonText("Copied!");
+      setTimeout(() => {
+        setCopyButtonText("Copy game ID");
+      }, 2000);
+    } catch {
+      setCopyButtonText("Copy failed!");
+    }
   };
 
   return (
@@ -53,7 +57,7 @@ const GameStatus = ({ game, isPlayerHost, errorMessage, handleStartGame }: GameS
 
                 <button
                   className="w-full text-white rounded p-2 my-2 bg-orange-600 hover:bg-orange-700"
-                  onClick={copyGameIdToClipboard}
+                  onClick={() => void copyGameIdToClipboard()}
                 >
                   {copyButtonText}
                 </button>

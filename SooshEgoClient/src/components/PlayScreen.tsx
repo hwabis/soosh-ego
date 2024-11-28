@@ -60,12 +60,12 @@ const PlayScreen = () => {
       isConnectingRef.current = false;
     };
 
-    cleanupConnection().then(() => {
-      connectAndSetConnection();
+    void cleanupConnection().then(async () => {
+      await connectAndSetConnection();
     });
 
     return () => {
-      cleanupConnection();
+      void cleanupConnection();
     };
   }, [gameId, playerName]);
 
@@ -100,7 +100,7 @@ const PlayScreen = () => {
         game={game}
         isPlayerHost={game.players.length > 0 && playerName === game.players[0].name.value}
         errorMessage={errorMessage}
-        handleStartGame={handleStartGame}
+        handleStartGame={() => void handleStartGame()}
       />
       {game.winnerName && (
         <div className="font-bold text-lg my-8">{`The winner is ${game.winnerName}!`}</div>
@@ -120,7 +120,7 @@ const PlayScreen = () => {
           <CardSelection
             cards={localPlayer.cardsInHand}
             selectionLimit={1} // todo chopsticks
-            onConfirm={handlePlayCard}
+            onConfirm={selectedIndices => void handlePlayCard(selectedIndices)}
           />
         </div>
       )}

@@ -18,7 +18,8 @@ export const createGame = async (
             return null;
         }
 
-        return await response.json();
+        // todo https://www.reddit.com/r/typescript/comments/18im04a/how_do_i_satisfy_this_type_requirement_no_matter/
+        return await response.json() as GameId;
     }
     catch {
         onError("Failed to connect to the server.");
