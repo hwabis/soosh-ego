@@ -118,7 +118,7 @@ const PlayScreen = () => {
       {localPlayer && (
         <div className="absolute bottom-4 left-0 right-0">
           <CardSelection
-            player={localPlayer}
+            localPlayer={localPlayer}
             selectionLimit={localPlayer.cardsInPlay.some(card => card.cardType === CardType.Chopsticks) ? 2 : 1}
             onConfirm={selectedIndices => void handlePlayCard(selectedIndices)}
           />

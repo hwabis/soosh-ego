@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { Player } from "../models/Models";
+import { CardType, Player } from "../models/Models";
 
 interface CardSelectionProps {
-  player: Player;
+  localPlayer: Player;
   selectionLimit: number;
   onConfirm: (selectedIndices: number[]) => void;
 }
 
-const CardSelection = ({ player, selectionLimit, onConfirm, }: CardSelectionProps) => {
+const CardSelection = ({ localPlayer, selectionLimit, onConfirm, }: CardSelectionProps) => {
   const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
 
   const toggleCardSelection = (selectedIndex: number) => {
@@ -32,7 +32,7 @@ const CardSelection = ({ player, selectionLimit, onConfirm, }: CardSelectionProp
   return (
     <div className="flex flex-col justify-center items-center gap-2">
       <div className="flex flex-wrap gap-2">
-        {player.cardsInHand.map((card, index) => (
+        {localPlayer.cardsInHand.map((card, index) => (
           <div
             key={index}
             className={`w-28 h-40 rounded p-2 cursor-pointer
@@ -45,13 +45,16 @@ const CardSelection = ({ player, selectionLimit, onConfirm, }: CardSelectionProp
           </div>
         ))}
       </div>
-      {player.cardsInHand.length > 0 &&
+      {localPlayer.cardsInHand.length > 0 &&
         <button
           className="w-64 h-16 text-white text-lg font-medium p-4 ml-2 rounded bg-green-600 hover:bg-green-700"
-          disabled={player.finishedTurn}
+          disabled={localPlayer.finishedTurn}
           onClick={handleConfirm}
         >
-          {player.finishedTurn ? `Waiting for other players...` : `Go!`}
+          {localPlayer.finishedTurn
+            ? "Waiting for other players..."
+            : `${localPlayer.cardsInPlay.some(card => card.cardType === CardType.Chopsticks) ? "Go! (Chopsticks available)" : "Go!"}`
+          }
         </button>
       }
     </div>
