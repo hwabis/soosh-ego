@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Card } from "../models/Models";
 
 interface CardSelectionProps {
   cards: Card[];
   selectionLimit: number;
+  playerFinishedTurn: boolean;
   onConfirm: (selectedIndices: number[]) => void;
 }
 
-const CardSelection = ({ cards, selectionLimit, onConfirm, }: CardSelectionProps) => {
+const CardSelection = ({ cards, selectionLimit, playerFinishedTurn, onConfirm, }: CardSelectionProps) => {
   const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
 
   const toggleCardSelection = (selectedIndex: number) => {
@@ -45,10 +46,11 @@ const CardSelection = ({ cards, selectionLimit, onConfirm, }: CardSelectionProps
       </div>
       {cards.length > 0 &&
         <button
-          className="w-32 text-white text-lg font-medium p-4 ml-2 rounded bg-green-600 hover:bg-green-700"
+          className="w-64 h-16 text-white text-lg font-medium p-4 ml-2 rounded bg-green-600 hover:bg-green-700"
+          disabled={playerFinishedTurn}
           onClick={handleConfirm}
         >
-          Confirm!
+          {playerFinishedTurn ? `Waiting for other players...` : `Go!`}
         </button>
       }
 

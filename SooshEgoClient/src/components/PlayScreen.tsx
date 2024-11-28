@@ -120,6 +120,7 @@ const PlayScreen = () => {
           <CardSelection
             cards={localPlayer.cardsInHand}
             selectionLimit={localPlayer.cardsInPlay.some(card => card.cardType === CardType.Chopsticks) ? 2 : 1}
+            playerFinishedTurn={localPlayer.finishedTurn}
             onConfirm={selectedIndices => void handlePlayCard(selectedIndices)}
           />
         </div>
