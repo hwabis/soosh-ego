@@ -7,11 +7,7 @@ interface CardSelectionProps {
   onConfirm: (selectedIndices: number[]) => void;
 }
 
-const CardSelection: React.FC<CardSelectionProps> = ({
-  cards,
-  selectionLimit,
-  onConfirm,
-}) => {
+const CardSelection = ({ cards, selectionLimit, onConfirm, }: CardSelectionProps) => {
   const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
 
   const toggleCardSelection = (selectedIndex: number) => {

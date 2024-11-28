@@ -2,7 +2,7 @@ import { useSearchParams } from "react-router-dom";
 import { connectToGame } from "../services/SignalRService";
 import { useEffect, useRef, useState } from "react";
 import { HubConnection } from "@microsoft/signalr";
-import { Game, GameStage } from "../models/Models";
+import { CardType, Game, GameStage } from "../models/Models";
 import GameStatus from "./GameStatus";
 import PlayerBox from "./PlayerBox";
 import { playCard, startGame } from "../services/ApiService";
@@ -25,7 +25,7 @@ const PlayScreen = () => {
 
   const [errorMessage, setErrorMessage] = useState<string>('');
 
-  const localPlayer = game.players.find((p) => p.name.value === playerName);
+  const localPlayer = game.players.find(player => player.name.value === playerName);
 
   useEffect(() => {
     if (!gameId || !playerName) {
@@ -119,7 +119,7 @@ const PlayScreen = () => {
         <div className="absolute bottom-4 left-0 right-0">
           <CardSelection
             cards={localPlayer.cardsInHand}
-            selectionLimit={1} // todo chopsticks
+            selectionLimit={localPlayer.cardsInPlay.some(card => card.cardType === CardType.Chopsticks) ? 2 : 1}
             onConfirm={selectedIndices => void handlePlayCard(selectedIndices)}
           />
         </div>
