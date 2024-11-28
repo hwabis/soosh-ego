@@ -43,10 +43,13 @@ namespace SooshEgoServer.Tests.Services
             gamesManager.AddPlayerToGame(gameId, new("player3"));
             gamesManager.StartGame(gameId);
 
+            Card player1CardToPlay = gamesManager.GetGameState(gameId).game!.Players[0].CardsInHand[4];
+
             (bool success1, string _) = gamesManager.PlayCard(gameId, new("player1"), 4, null);
             Assert.True(success1);
 
-            List<Card> oldPlayer1Cards = [.. gamesManager.GetGameState(gameId).game!.Players[0].CardsInHand];
+            List<Card> player1HandAfterPlay = [.. gamesManager.GetGameState(gameId).game!.Players[0].CardsInHand];
+            player1HandAfterPlay.Remove(player1CardToPlay);
 
             (bool success2, string _) = gamesManager.PlayCard(gameId, new("player2"), 5, null);
             Assert.True(success2);
@@ -55,11 +58,11 @@ namespace SooshEgoServer.Tests.Services
             Assert.True(success3);
 
             // At this point, player 1's hand becomes player 2's
-            List<Card> player2Hand = gamesManager.GetGameState(gameId).game!.Players[1].CardsInHand;
+            List<Card> player2NewHand = gamesManager.GetGameState(gameId).game!.Players[1].CardsInHand;
 
-            for (int i = 0; i < player2Hand.Count; i++)
+            for (int i = 0; i < player2NewHand.Count; i++)
             {
-                Assert.True(oldPlayer1Cards[i].CardType == player2Hand[i].CardType);
+                Assert.True(player1HandAfterPlay[i].CardType == player2NewHand[i].CardType);
             }
         }
 
