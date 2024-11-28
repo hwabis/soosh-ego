@@ -273,6 +273,11 @@ namespace SooshEgoServer.Services
                     player.EnqueuedCardsToPlay.Add(card2);
                     player.CardsInHand.Remove(card2);
                     logger.LogInformation("{PlayerName} in {GameId} played a second card {Card2}", playerName, gameId, card2);
+
+                    Card? chopsticksCard = player.CardsInPlay.Where(card => card.CardType == CardType.Chopsticks).FirstOrDefault() ??
+                        throw new Exception($"{playerName} in {gameId} played two cards without chopsticks!");
+                    player.CardsInPlay.Remove(chopsticksCard);
+                    player.CardsInHand.Add(chopsticksCard);
                 }
 
                 player.FinishedTurn = true;
