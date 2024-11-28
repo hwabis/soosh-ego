@@ -23,7 +23,7 @@ const PlayScreen = () => {
   const connectionRef = useRef<HubConnection | null>(null);
   const isConnectingRef = useRef(false);
 
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const localPlayer = game.players.find(player => player.name.value === playerName);
 
@@ -118,9 +118,8 @@ const PlayScreen = () => {
       {localPlayer && (
         <div className="absolute bottom-4 left-0 right-0">
           <CardSelection
-            cards={localPlayer.cardsInHand}
+            player={localPlayer}
             selectionLimit={localPlayer.cardsInPlay.some(card => card.cardType === CardType.Chopsticks) ? 2 : 1}
-            playerFinishedTurn={localPlayer.finishedTurn}
             onConfirm={selectedIndices => void handlePlayCard(selectedIndices)}
           />
         </div>

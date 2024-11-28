@@ -4,9 +4,9 @@ import { createGame, addPlayer } from '../services/ApiService';
 import GithubIcon from '../assets/github-mark.svg?react';
 
 const GameLobbyScreen = () => {
-  const [playerName, setPlayerName] = useState('');
-  const [enteredGameId, setEnteredGameId] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [playerName, setPlayerName] = useState("");
+  const [enteredGameId, setEnteredGameId] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const navigate = useNavigate();
 
