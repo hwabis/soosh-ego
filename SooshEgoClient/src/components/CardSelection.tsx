@@ -53,7 +53,6 @@ const CardSelection = ({ cards, selectionLimit, playerFinishedTurn, onConfirm, }
           {playerFinishedTurn ? `Waiting for other players...` : `Go!`}
         </button>
       }
-
     </div>
   );
 };
