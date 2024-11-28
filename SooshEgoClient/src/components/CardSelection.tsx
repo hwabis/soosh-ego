@@ -36,11 +36,14 @@ const CardSelection = ({ cards, selectionLimit, playerFinishedTurn, onConfirm, }
         {cards.map((card, index) => (
           <div
             key={index}
-            className={`w-28 h-40 border-4 rounded p-2 cursor-pointer
-              ${selectedIndices.includes(index) ? "border-blue-300" : "border-gray-500"}`}
+            className={`w-28 h-40 rounded p-2 cursor-pointer
+              ${selectedIndices.includes(index) ? "bg-slate-600" : "bg-slate-300"}`}
             onClick={() => toggleCardSelection(index)}
           >
-            <p className="text-center font-bold">{card.cardType}</p>
+            <p className={`text-center font-medium ${selectedIndices.includes(index) ? "text-white" : "text-black"}`}
+            >
+              {card.cardType}
+            </p>
           </div>
         ))}
       </div>
