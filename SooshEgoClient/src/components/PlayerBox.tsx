@@ -1,4 +1,5 @@
-import { GameStage, Player } from "../models/Models";
+import { CARD_DETAILS } from "../models/CardAppearanceDetails";
+import { Card, CardType, GameStage, Player } from "../models/Models";
 
 interface PlayerBoxProps {
   player: Player;
@@ -14,8 +15,41 @@ const PlayerBox = ({ player, isLocalPlayer, gameStage }: PlayerBoxProps) => {
     return player.finishedTurn ? "Card chosen!" : "Choosing a card...";
   };
 
+  const sortCards = (cards: Card[]) => {
+    const cardPriority: Record<CardType, number> = {
+      [CardType.Tempura]: 0,
+      [CardType.Sashimi]: 1,
+      [CardType.Dumpling]: 2,
+      [CardType.MakiRoll3]: 3,
+      [CardType.MakiRoll2]: 3,
+      [CardType.MakiRoll1]: 3,
+      [CardType.SalmonNigiri]: 4,
+      [CardType.SquidNigiri]: 4,
+      [CardType.EggNigiri]: 4,
+      [CardType.Wasabi]: 4,
+      [CardType.Pudding]: 5,
+      [CardType.Chopsticks]: 6,
+    };
+
+    const groupedCards: Record<number, Card[]> = {};
+
+    cards.forEach(card => {
+      const groupKey = cardPriority[card.cardType];
+      if (!groupedCards[groupKey]) {
+        groupedCards[groupKey] = [];
+      }
+      groupedCards[groupKey].push(card);
+    });
+
+    return Object.keys(groupedCards)
+      .sort((a, b) => Number(a) - Number(b))
+      .flatMap(key => groupedCards[Number(key)]);
+  };
+
+  const sortedCards = sortCards(player.cardsInPlay);
+
   return (
-    <div className={`bg-white border-2 ${isLocalPlayer ? "border-green-600" : "border-red-900"} p-4 w-56 rounded`}>
+    <div className={`bg-white border-2 ${isLocalPlayer ? "border-green-600" : "border-red-900"} p-4 w-60 rounded`}>
       <p className="text-lg font-bold">
         {isLocalPlayer ? `${player.name.value} (You)` : player.name.value}
       </p>
@@ -30,11 +64,19 @@ const PlayerBox = ({ player, isLocalPlayer, gameStage }: PlayerBoxProps) => {
       </p>
       <div className="mt-2">
         <p className="font-medium">Played cards:</p>
-        <ul className="list-disc list-inside">
-          {player.cardsInPlay.map((card, index) => (
-            <li key={index}>{card.cardType}</li>
-          ))}
-        </ul>
+        <div className="flex flex-col gap-1">
+          {sortedCards.map((card, index) => {
+            const details = CARD_DETAILS[card.cardType];
+            return (
+              <div
+                key={index}
+                className={`px-2 py-1 rounded ${details.bgColor} font-medium`}
+              >
+                {details.displayName} [{details.description}]
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

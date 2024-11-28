@@ -1,85 +1,6 @@
 import { useState } from "react";
 import { CardType, Player } from "../models/Models";
-
-const CARD_DETAILS: Record<CardType, {
-  name: string;
-  description: string;
-  image: string;
-  bgColor: string;
-}> = {
-  [CardType.Tempura]: {
-    name: "Tempura",
-    description: "x2 = 5",
-    image: "/tempura.png",
-    bgColor: "bg-purple-300"
-  },
-  [CardType.Sashimi]: {
-    name: "Sashimi",
-    description: "x3 = 10",
-    image: "/sashimi.png",
-    bgColor: "bg-lime-300"
-  },
-  [CardType.Dumpling]: {
-    name: "Dumpling",
-    description: "1 3 6 10 15",
-    image: "/dumpling.png",
-    bgColor: "bg-blue-300"
-  },
-  [CardType.MakiRoll3]: {
-    name: "Maki Roll (3)",
-    description: "Most 6/3",
-    image: "/maki3.png",
-    bgColor: "bg-red-500"
-  },
-  [CardType.MakiRoll2]: {
-    name: "Maki Roll (2)",
-    description: "Most 6/3",
-    image: "/maki2.png",
-    bgColor: "bg-red-500"
-  },
-  [CardType.MakiRoll1]: {
-    name: "Maki Roll (1)",
-    description: "Most 6/3",
-    image: "/maki1.png",
-    bgColor: "bg-red-500"
-  },
-  [CardType.SalmonNigiri]: {
-    name: "Salmon Nigiri",
-    description: "3",
-    image: "/salmon-nigiri.png",
-    bgColor: "bg-yellow-300"
-  },
-  [CardType.SquidNigiri]: {
-    name: "Squid Nigiri",
-    description: "2",
-    image: "/squid-nigiri.png",
-    bgColor: "bg-yellow-300"
-  },
-  [CardType.EggNigiri]: {
-    name: "Egg Nigiri",
-    description: "1",
-    image: "/egg-nigiri.png",
-    bgColor: "bg-yellow-300"
-  },
-  [CardType.Wasabi]: {
-    name: "Wasabi",
-    description: "Next Nigiri x3",
-    image: "/wasabi.png",
-    bgColor: "bg-yellow-300"
-  },
-  [CardType.Pudding]: {
-    name: "Pudding",
-    description: "End 6/-6",
-    image: "/pudding.png",
-    bgColor: "bg-pink-200"
-  },
-  [CardType.Chopsticks]: {
-    name: "Scroll",
-    description: "Swap for 2",
-    image: "/chopsticks.png",
-    bgColor: "bg-sky-200"
-  },
-};
+import { CARD_DETAILS } from "../models/CardAppearanceDetails";
 
 interface CardSelectionProps {
   localPlayer: Player;
@@ -121,10 +42,10 @@ const CardSelection = ({ localPlayer, selectionLimit, onConfirm, }: CardSelectio
                 ${details.bgColor} ${selectedIndices.includes(index) ? "ring-4 ring-cyan-700" : ""}`}
               onClick={() => toggleCardSelection(index)}
             >
-              <p className="text-center font-bold">{details.name}</p>
+              <p className="text-center font-bold">{details.displayName}</p>
               <img
                 src={details.image}
-                alt={details.name}
+                alt={details.displayName}
                 className="m-4 h-full max-h-full object-contain overflow-hidden"
               />
               <p className="text-center font-medium text-sm">{details.description}</p>
