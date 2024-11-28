@@ -23,6 +23,9 @@ const PlayerBox = ({ player, isLocalPlayer, gameStage }: PlayerBoxProps) => {
         {!player.connectionId && "[Disconnected]"}
       </p>
       <p className="font-medium">
+        Points (end-of-round): {player.pointsAtEndOfPreviousRound}
+      </p>
+      <p className="font-medium">
         {getTurnStatus()}
       </p>
       <div className="mt-2">
