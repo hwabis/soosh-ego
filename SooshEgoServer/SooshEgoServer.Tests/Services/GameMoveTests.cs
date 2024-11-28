@@ -81,8 +81,6 @@ namespace SooshEgoServer.Tests.Services
             Assert.True(success1);
         }
 
-        // todo scoring
-
         [Fact]
         public void StartGame_ToRestartGame()
         {

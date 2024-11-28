@@ -46,8 +46,6 @@ namespace SooshEgoServer.Controllers
                 return BadRequest(error);
             }
 
-            // todo save... probably want round numbers too
-
             return Ok();
         }
 

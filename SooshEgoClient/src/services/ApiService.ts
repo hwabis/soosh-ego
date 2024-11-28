@@ -18,7 +18,7 @@ export const createGame = async (
             return null;
         }
 
-        // todo https://www.reddit.com/r/typescript/comments/18im04a/how_do_i_satisfy_this_type_requirement_no_matter/
+        // https://www.reddit.com/r/typescript/comments/18im04a/how_do_i_satisfy_this_type_requirement_no_matter/
         return await response.json() as GameId;
     }
     catch {
