@@ -265,19 +265,16 @@ namespace SooshEgoServer.Services
                 }
 
                 player.EnqueuedCardsToPlay.Add(card1);
-                player.CardsInHand.Remove(card1);
                 logger.LogInformation("{PlayerName} in {GameId} played {Card1}", playerName, gameId, card1);
 
                 if (card2 != null)
                 {
                     player.EnqueuedCardsToPlay.Add(card2);
-                    player.CardsInHand.Remove(card2);
                     logger.LogInformation("{PlayerName} in {GameId} played a second card {Card2}", playerName, gameId, card2);
 
                     Card? chopsticksCard = player.CardsInPlay.Where(card => card.CardType == CardType.Chopsticks).FirstOrDefault() ??
                         throw new Exception($"{playerName} in {gameId} played two cards without chopsticks!");
-                    player.CardsInPlay.Remove(chopsticksCard);
-                    player.CardsInHand.Add(chopsticksCard);
+                    player.EnqueuedCardsToHand.Add(chopsticksCard);
                 }
 
                 player.FinishedTurn = true;
@@ -287,8 +284,24 @@ namespace SooshEgoServer.Services
                     foreach (Player p in matchingGame.Players)
                     {
                         p.FinishedTurn = false;
+
                         p.CardsInPlay.AddRange(p.EnqueuedCardsToPlay);
+
+                        foreach (Card card in p.EnqueuedCardsToPlay)
+                        {
+                            p.CardsInHand.Remove(card);
+                        }
+
                         p.EnqueuedCardsToPlay.Clear();
+
+                        p.CardsInHand.AddRange(p.EnqueuedCardsToHand);
+
+                        foreach (Card card in p.EnqueuedCardsToHand)
+                        {
+                            p.CardsInPlay.Remove(card);
+                        }
+
+                        p.EnqueuedCardsToHand.Clear();
                     }
 
                     bool roundEnded = matchingGame.Players.Any(player => player.CardsInHand.Count == 0);

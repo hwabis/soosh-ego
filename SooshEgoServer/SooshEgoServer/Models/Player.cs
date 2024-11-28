@@ -23,11 +23,17 @@ namespace SooshEgoServer.Models
         public string? ConnectionId { get; set; }
 
         /// <summary>
-        /// Serves as a buffer when moving a card from hand to in-play, so that the move is not immediately revealed to all players
+        /// Buffer for when moving cards from hand to play, so that the move is not immediately revealed to all players
         /// until everybody has made their move. So this only ever has at most 2 cards (1 on a normal play, 2 for chopsticks).
         /// </summary>
         [JsonIgnore]
         public List<Card> EnqueuedCardsToPlay { get; set; } = [];
+
+        /// <summary>
+        /// Buffer for when moving cards from play to hand.
+        /// </summary>
+        [JsonIgnore]
+        public List<Card> EnqueuedCardsToHand { get; set; } = [];
     }
 
     public record PlayerName(string Value);
