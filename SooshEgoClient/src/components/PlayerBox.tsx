@@ -49,7 +49,7 @@ const PlayerBox = ({ player, isLocalPlayer, gameStage }: PlayerBoxProps) => {
   const sortedCards = sortCards(player.cardsInPlay);
 
   return (
-    <div className={`bg-white border-2 ${isLocalPlayer ? "border-green-600" : "border-red-900"} p-4 w-60 rounded`}>
+    <div className={`bg-white border-2 ${isLocalPlayer ? "border-green-600" : "border-red-900"} p-4 w-64 rounded`}>
       <p className="text-lg font-bold">
         {isLocalPlayer ? `${player.name.value} (You)` : player.name.value}
       </p>
@@ -62,9 +62,9 @@ const PlayerBox = ({ player, isLocalPlayer, gameStage }: PlayerBoxProps) => {
       <p className="font-medium">
         {getTurnStatus()}
       </p>
+      <hr className="my-2" />
       <div className="mt-2">
-        <p className="font-medium">Played cards:</p>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 overflow-y-auto min-h-80 max-h-80">
           {sortedCards.map((card, index) => {
             const details = CARD_DETAILS[card.cardType];
             return (

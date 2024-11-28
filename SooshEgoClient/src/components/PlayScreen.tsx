@@ -95,7 +95,7 @@ const PlayScreen = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
+    <div className="flex flex-col justify-start items-center h-screen pt-32 bg-gray-100">
       <GameStatus
         game={game}
         isPlayerHost={game.players.length > 0 && playerName === game.players[0].name.value}
