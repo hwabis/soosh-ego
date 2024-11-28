@@ -131,8 +131,7 @@ const CardSelection = ({ localPlayer, selectionLimit, onConfirm, }: CardSelectio
             </div>);
         })}
       </div>
-      {
-        localPlayer.cardsInHand.length > 0 &&
+      {localPlayer.cardsInHand.length > 0 &&
         <button
           className="w-64 h-16 text-white text-lg font-medium p-4 ml-2 rounded bg-green-600 hover:bg-green-700"
           disabled={localPlayer.finishedTurn}
