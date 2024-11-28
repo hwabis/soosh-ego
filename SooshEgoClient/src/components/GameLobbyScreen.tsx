@@ -51,7 +51,7 @@ const GameLobbyScreen = () => {
             className="block w-full rounded p-2"
           />
           <button
-            onClick={() => void handleCreateGame}
+            onClick={() => void handleCreateGame()}
             className="w-full text-white rounded p-2 bg-green-600  hover:bg-green-700"
           >
             Create New Game
@@ -72,7 +72,7 @@ const GameLobbyScreen = () => {
             className="block w-full rounded p-2"
           />
           <button
-            onClick={() => void handleJoinGame}
+            onClick={() => void handleJoinGame()}
             className="w-full text-white rounded p-2 bg-green-600  hover:bg-green-700"
           >
             Join Game
