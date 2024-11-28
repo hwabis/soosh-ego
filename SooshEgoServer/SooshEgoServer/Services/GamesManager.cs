@@ -295,12 +295,17 @@ namespace SooshEgoServer.Services
 
                         bool gameEnded = matchingGame.NumberOfRoundsCompleted == maxNumberOfRounds;
 
-                        SetPlayerPoints(matchingGame, gameEnded);
+                        foreach (var kvp in GamePointsCalculator.CalculateRoundPoints(matchingGame, gameEnded))
+                        {
+                            kvp.Key.PointsAtEndOfPreviousRound += kvp.Value;
+                        }
 
                         if (gameEnded)
                         {
                             matchingGame.GameStage = GameStage.Finished;
-                            SetGameWinnerName(matchingGame);
+
+                            string winnerName = GamePointsCalculator.GetGameWinnerName(matchingGame);
+                            matchingGame.WinnerName = winnerName;
 
                             // todo save game
                         }
@@ -495,174 +500,6 @@ namespace SooshEgoServer.Services
             }
 
             game.Players[0].CardsInHand = lastPlayerHand;
-        }
-
-        private void SetPlayerPoints(Game game, bool includePudding)
-        {
-            Dictionary<Player, int> makiRollCounts = [];
-            Dictionary<Player, int> puddingCounts = [];
-
-            foreach (Player player in game.Players)
-            {
-                makiRollCounts.Add(player, 0);
-                puddingCounts.Add(player, 0);
-
-                int tempuraCount = 0;
-                int sashimiCount = 0;
-                int dumplingCount = 0;
-                bool isWasabiActive = false;
-
-                foreach (Card card in player.CardsInHand)
-                {
-                    switch (card.CardType)
-                    {
-                        case CardType.Tempura:
-                            tempuraCount++;
-                            break;
-                        case CardType.Sashimi:
-                            sashimiCount++;
-                            break;
-                        case CardType.Dumpling:
-                            dumplingCount++;
-                            break;
-                        case CardType.Wasabi:
-                            isWasabiActive = true;
-                            break;
-                        case CardType.SquidNigiri:
-                            player.PointsAtEndOfPreviousRound += isWasabiActive ? 9 : 3;
-                            isWasabiActive = false;
-                            break;
-                        case CardType.SalmonNigiri:
-                            player.PointsAtEndOfPreviousRound += isWasabiActive ? 6 : 2;
-                            isWasabiActive = false;
-                            break;
-                        case CardType.EggNigiri:
-                            player.PointsAtEndOfPreviousRound += isWasabiActive ? 3 : 1;
-                            isWasabiActive = false;
-                            break;
-                        case CardType.MakiRoll3:
-                            makiRollCounts[player] += 3;
-                            break;
-                        case CardType.MakiRoll2:
-                            makiRollCounts[player] += 2;
-                            break;
-                        case CardType.MakiRoll1:
-                            makiRollCounts[player] += 1;
-                            break;
-                        case CardType.Pudding:
-                            puddingCounts[player]++;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-
-                player.PointsAtEndOfPreviousRound += tempuraCount / 2 * 5;
-                player.PointsAtEndOfPreviousRound += sashimiCount / 3 * 10;
-                player.PointsAtEndOfPreviousRound += dumplingCount switch
-                {
-                    0 => 0,
-                    1 => 1,
-                    2 => 3,
-                    3 => 6,
-                    4 => 10,
-                    _ => 15,
-                };
-            }
-
-            int maxMaki = makiRollCounts.Values.Max();
-
-            List<Player> firstPlaceMakiPlayers = [];
-
-            if (maxMaki > 0)
-            {
-                firstPlaceMakiPlayers = makiRollCounts.Where(
-                    count => count.Value == maxMaki).Select(playerMakiPair => playerMakiPair.Key).ToList();
-            }
-
-            int secondMaxMaki = makiRollCounts.Values.Where(playerMakiPair => playerMakiPair < maxMaki).DefaultIfEmpty(0).Max();
-
-            List<Player> secondPlaceMakiPlayers = [];
-
-            if (secondMaxMaki > 0)
-            {
-                secondPlaceMakiPlayers = makiRollCounts.Where(count => count.Value == secondMaxMaki)
-                    .Select(playerMakiPair => playerMakiPair.Key).ToList();
-            }
-
-            if (firstPlaceMakiPlayers.Count > 0)
-            {
-                int firstPlacePoints = 6 / firstPlaceMakiPlayers.Count;
-
-                foreach (Player player in firstPlaceMakiPlayers)
-                {
-                    player.PointsAtEndOfPreviousRound += firstPlacePoints;
-                }
-            }
-
-            if (secondPlaceMakiPlayers.Count > 0)
-            {
-                int secondPlacePoints = 3 / secondPlaceMakiPlayers.Count;
-
-                foreach (Player player in secondPlaceMakiPlayers)
-                {
-                    player.PointsAtEndOfPreviousRound += secondPlacePoints;
-                }
-            }
-
-            if (includePudding)
-            {
-                int maxPudding = puddingCounts.Values.Max();
-                int minPudding = puddingCounts.Values.Min();
-
-                List<Player> mostPuddingPlayers = puddingCounts.Where(pair => pair.Value == maxPudding).Select(pair => pair.Key).ToList();
-                List<Player> leastPuddingPlayers = puddingCounts.Where(pair => pair.Value == minPudding).Select(pair => pair.Key).ToList();
-
-                if (mostPuddingPlayers.Count > 0)
-                {
-                    int pointsForMost = 6 / mostPuddingPlayers.Count;
-
-                    foreach (Player player in mostPuddingPlayers)
-                    {
-                        player.PointsAtEndOfPreviousRound += pointsForMost;
-                    }
-                }
-
-                if (leastPuddingPlayers.Count > 0 && game.Players.Count > 2 && maxPudding != minPudding)
-                {
-                    int pointsForLeast = -6 / leastPuddingPlayers.Count;
-
-                    foreach (Player player in leastPuddingPlayers)
-                    {
-                        player.PointsAtEndOfPreviousRound += pointsForLeast;
-                    }
-                }
-            }
-        }
-
-        private void SetGameWinnerName(Game game)
-        {
-            int maxPoints = game.Players.Select(player => player.PointsAtEndOfPreviousRound).Max();
-            List<Player> playersWithMaxPoints = game.Players.Where(player => player.PointsAtEndOfPreviousRound == maxPoints).ToList();
-
-            if (playersWithMaxPoints.Count == 1)
-            {
-                game.WinnerName = playersWithMaxPoints[0].Name.Value;
-            }
-            else if (playersWithMaxPoints.Count > 1)
-            {
-                int maxPudding = playersWithMaxPoints.Select(player => player.CardsInPlay.Count(
-                    card => card.CardType == CardType.Pudding)).Max();
-
-                // Intentionally have no further tiebreaker than pudding count
-                game.WinnerName = playersWithMaxPoints.Where(player => player.CardsInPlay.Where(
-                    card => card.CardType == CardType.Pudding).Count() == maxPudding).FirstOrDefault()!.Name.Value;
-            }
-            else
-            {
-                game.WinnerName = "Something went horribly wrong. Please report to the devs.";
-                logger.LogError("{GameId} had no winner", game.GameId);
-            }
         }
     }
 }
