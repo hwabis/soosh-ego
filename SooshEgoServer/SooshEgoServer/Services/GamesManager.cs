@@ -210,11 +210,11 @@ namespace SooshEgoServer.Services
         #region Gameplay
 
         public (bool success, string error) PlayCard(
-            GameId gameId, PlayerName playerName, int indexOfCardInHand, int? indexOfSecondCardInHandUsingChopsticks)
+            GameId gameId, PlayerName playerName, int card1Index, int? card2IndexRequiresChopsticks)
         {
-            if (indexOfCardInHand == indexOfSecondCardInHandUsingChopsticks)
+            if (card1Index == card2IndexRequiresChopsticks)
             {
-                logger.LogWarning("{PlayerName} in {GameId} tried to play the card at index {Index} twice", playerName, gameId, indexOfCardInHand);
+                logger.LogWarning("{PlayerName} in {GameId} tried to play the card at index {Index} twice", playerName, gameId, card1Index);
                 return (false, "Cannot play the same card twice in one turn.");
             }
 
@@ -240,7 +240,7 @@ namespace SooshEgoServer.Services
                     return (false, "Player already went this turn.");
                 }
 
-                Card? card1 = TryGetCard(player, indexOfCardInHand);
+                Card? card1 = TryGetCard(player, card1Index);
 
                 if (card1 == null)
                 {
@@ -249,14 +249,14 @@ namespace SooshEgoServer.Services
 
                 Card? card2 = null;
 
-                if (indexOfSecondCardInHandUsingChopsticks != null)
+                if (card2IndexRequiresChopsticks != null)
                 {
                     if (!player.CardsInPlay.Any(card => card.CardType == CardType.Chopsticks))
                     {
                         return (false, "{PlayerName} in {GameId} tried to play two cards but did not have chopsticks.");
                     }
 
-                    card2 = TryGetCard(player, indexOfCardInHand);
+                    card2 = TryGetCard(player, card2IndexRequiresChopsticks.Value);
 
                     if (card2 == null)
                     {
