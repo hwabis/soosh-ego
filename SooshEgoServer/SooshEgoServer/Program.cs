@@ -9,19 +9,22 @@ namespace SooshEgoServer
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddCors(options =>
+            string[]? allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
+
+            if (allowedOrigins != null)
             {
-                options.AddDefaultPolicy(builder =>
+                builder.Services.AddCors(options =>
                 {
-                    builder
-                        .WithOrigins(
-                            "http://localhost:3000" // todo ihni how to handle production
-                        )
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials();
+                    options.AddDefaultPolicy(builder =>
+                    {
+                        builder
+                            .WithOrigins(allowedOrigins)
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .AllowCredentials();
+                    });
                 });
-            });
+            }
 
             builder.Services.AddControllers();
             builder.Services.AddSignalR();
