@@ -1,9 +1,10 @@
-﻿using SooshEgoServer.Models;
+﻿using SooshEgoServer.Data;
+using SooshEgoServer.Models;
 using System.Text;
 
 namespace SooshEgoServer.Services
 {
-    public class GamesManager(ILogger<GamesManager> logger) : IGamesManager
+    public class GamesManager(ILogger<GamesManager> logger, IServiceProvider serviceProvider) : IGamesManager
     {
         private readonly Dictionary<GameId, Game> games = [];
         private const int gameIdLength = 6;
@@ -11,7 +12,7 @@ namespace SooshEgoServer.Services
 
         private const int maxNumberOfRounds = 3;
 
-        private readonly object gamesLock = new(); // todo revisit if i'm over-locking
+        private readonly object gamesLock = new(); // todo revisit if i'm over-locking... each game should have its own lock?
 
         public event EventHandler<GameStateUpdatedEventArgs>? GameStateUpdated;
 
@@ -325,7 +326,7 @@ namespace SooshEgoServer.Services
                             string winnerName = GamePointsCalculator.GetGameWinnerName(matchingGame);
                             matchingGame.WinnerName = winnerName;
 
-                            // todo save game
+                            Task.Run(async () => await SaveGameToDb(matchingGame)).Wait(); // todo apparently this is horrible
                         }
                     }
                     else
@@ -518,6 +519,37 @@ namespace SooshEgoServer.Services
             }
 
             game.Players[0].CardsInHand = lastPlayerHand;
+        }
+
+        private async Task SaveGameToDb(Game game)
+        {
+            try
+            {
+                using IServiceScope scope = serviceProvider.CreateScope();
+                SooshEgoDbContext dbContext = scope.ServiceProvider.GetRequiredService<SooshEgoDbContext>();
+
+                HashSet<PlayerPoints> playerPoints = [];
+
+                foreach (Player player in game.Players)
+                {
+                    playerPoints.Add(new()
+                    {
+                        PlayerName = player.Name.Value,
+                        Points = player.PointsAtEndOfPreviousRound,
+                    });
+                }
+
+                dbContext.CompletedGames.Add(new()
+                {
+                    PlayerPoints = playerPoints,
+                });
+
+                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception exception)
+            {
+                logger.LogError("Couldn't save game {GameId} to database: {Error}", game.GameId, exception);
+            }
         }
     }
 }

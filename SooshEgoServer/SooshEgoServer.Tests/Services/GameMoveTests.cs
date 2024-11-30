@@ -8,13 +8,13 @@ namespace SooshEgoServer.Tests.Services
 {
     public class GameMoveTests
     {
-        private readonly Mock<ILogger<GamesManager>> mockLogger;
         private readonly GamesManager gamesManager;
 
         public GameMoveTests()
         {
-            mockLogger = new Mock<ILogger<GamesManager>>();
-            gamesManager = new GamesManager(mockLogger.Object);
+            var mockLogger = new Mock<ILogger<GamesManager>>();
+            var mockServiceProvider = new Mock<IServiceProvider>();
+            gamesManager = new GamesManager(mockLogger.Object, mockServiceProvider.Object);
         }
 
         [Fact]

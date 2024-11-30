@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using SooshEgoServer.Data;
 using SooshEgoServer.Hubs;
 using SooshEgoServer.Services;
 
@@ -34,12 +36,19 @@ namespace SooshEgoServer
             builder.Services.AddSingleton<IGamesManager, GamesManager>();
             builder.Services.AddSingleton<GameUpdateNotifier>();
 
+            builder.Services.AddDbContext<SooshEgoDbContext>(
+                options => options.UseSqlServer(builder.Configuration.GetConnectionString("DatabaseConnection")));
+
             WebApplication app = builder.Build();
 
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+
+                using IServiceScope scope = app.Services.CreateScope();
+                SooshEgoDbContext db = scope.ServiceProvider.GetRequiredService<SooshEgoDbContext>();
+                db.Database.EnsureCreated();
             }
 
             app.UseCors();

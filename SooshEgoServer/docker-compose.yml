@@ -1,0 +1,21 @@
+services:
+  sooshego-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sooshego-db
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "1433:1433"
+
+  sooshego-server:
+    build:
+      context: .
+      dockerfile: SooshEgoServer/Dockerfile
+    depends_on:
+      - sooshego-db
+    environment:
+      ConnectionStrings__DatabaseConnection: 
+    ports:
+      - "5000:8080"
+      - "5001:8081"
