@@ -94,6 +94,14 @@ const PlayScreen = () => {
     }
   };
 
+  const cardSelectionLimit = (() => {
+    if (!localPlayer || localPlayer?.finishedTurn) {
+      return 0;
+    }
+
+    return localPlayer.cardsInPlay.some(card => card.cardType === CardType.Chopsticks) ? 2 : 1;
+  })();
+
   return (
     <div className="flex flex-col justify-start items-center h-screen pt-32 bg-gray-100">
       <GameStatus
@@ -119,7 +127,7 @@ const PlayScreen = () => {
         <div className="absolute bottom-4 left-0 right-0">
           <CardSelection
             localPlayer={localPlayer}
-            selectionLimit={localPlayer.cardsInPlay.some(card => card.cardType === CardType.Chopsticks) ? 2 : 1}
+            selectionLimit={cardSelectionLimit}
             onConfirm={selectedIndices => void handlePlayCard(selectedIndices)}
           />
         </div>
