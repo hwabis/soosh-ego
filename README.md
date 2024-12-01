@@ -2,6 +2,10 @@
 
 This is an online implementation of the [Sushi Go!](https://boardgamegeek.com/boardgame/133473/sushi-go) card game.
 
+Play here (at the time of this writing) - http://68.183.143.103/
+
+![image](https://github.com/user-attachments/assets/34356497-9531-40be-a4bd-5856bc2087fd)
+
 ## Development
 
 ### Server
