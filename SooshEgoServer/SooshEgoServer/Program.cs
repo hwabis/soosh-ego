@@ -11,9 +11,9 @@ namespace SooshEgoServer
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-            string[]? allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
+            string[] allowedOrigins = builder.Configuration["ALLOWED_ORIGINS"]?.Split(",") ?? [];
 
-            if (allowedOrigins != null)
+            if (allowedOrigins.Length > 0)
             {
                 builder.Services.AddCors(options =>
                 {
@@ -37,7 +37,7 @@ namespace SooshEgoServer
             builder.Services.AddSingleton<GameUpdateNotifier>();
 
             builder.Services.AddDbContext<SooshEgoDbContext>(
-                options => options.UseSqlServer(builder.Configuration.GetConnectionString("DatabaseConnection")));
+                options => options.UseSqlServer(builder.Configuration.GetConnectionString("CONNECTION_STRING")));
 
             WebApplication app = builder.Build();
 

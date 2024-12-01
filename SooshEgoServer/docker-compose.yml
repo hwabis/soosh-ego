@@ -15,7 +15,8 @@ services:
     depends_on:
       - sooshego-db
     environment:
-      ConnectionStrings__DatabaseConnection: ${ConnectionStrings__DatabaseConnection}
+      ConnectionStrings__CONNECTION_STRING: ${ConnectionStrings__CONNECTION_STRING}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
     ports:
       - "5000:8080"
       - "5001:8081"
