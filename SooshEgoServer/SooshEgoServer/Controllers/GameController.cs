@@ -6,7 +6,7 @@ namespace SooshEgoServer.Controllers
 {
     [ApiController]
     [Route("api")]
-    public class GameLobbyController(IGamesManager gamesManager) : ControllerBase
+    public class GameController(IGamesManager gamesManager) : ControllerBase
     {
         [HttpPost("create")]
         public IActionResult CreateAndAddPlayerToGame([FromBody] PlayerName playerName)
