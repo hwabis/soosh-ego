@@ -42,16 +42,16 @@ export const CARD_DETAILS: Record<CardType, {
         image: "/maki1.png",
         bgColor: "bg-red-500"
     },
-    [CardType.SalmonNigiri]: {
-        displayName: "Salmon Nigiri",
-        description: "3",
-        image: "/salmon-nigiri.png",
-        bgColor: "bg-yellow-300"
-    },
     [CardType.SquidNigiri]: {
         displayName: "Squid Nigiri",
-        description: "2",
+        description: "3",
         image: "/squid-nigiri.png",
+        bgColor: "bg-yellow-300"
+    },
+    [CardType.SalmonNigiri]: {
+        displayName: "Salmon Nigiri",
+        description: "2",
+        image: "/salmon-nigiri.png",
         bgColor: "bg-yellow-300"
     },
     [CardType.EggNigiri]: {
