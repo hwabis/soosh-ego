@@ -37,11 +37,11 @@ namespace SooshEgoServer.Services
                         case CardType.Wasabi:
                             isWasabiActive = true;
                             break;
-                        case CardType.SalmonNigiri:
+                        case CardType.SquidNigiri:
                             playerPointsForThisRound[player] += isWasabiActive ? 9 : 3;
                             isWasabiActive = false;
                             break;
-                        case CardType.SquidNigiri:
+                        case CardType.SalmonNigiri:
                             playerPointsForThisRound[player] += isWasabiActive ? 6 : 2;
                             isWasabiActive = false;
                             break;
@@ -66,12 +66,8 @@ namespace SooshEgoServer.Services
                     }
                 }
 
-                int tempuraSets = tempuraCount / 2;
-                playerPointsForThisRound[player] += tempuraSets * 5;
-
-                int sashimiSets = sashimiCount / 3;
-                playerPointsForThisRound[player] += sashimiSets * 10;
-
+                playerPointsForThisRound[player] += tempuraCount / 2 * 5;
+                playerPointsForThisRound[player] += sashimiCount / 3 * 10;
                 playerPointsForThisRound[player] += dumplingCount switch
                 {
                     0 => 0,
